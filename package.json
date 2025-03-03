@@ -1,0 +1,28 @@
+{
+  "name": "pixi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KianCandelario/slot-machine-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/KianCandelario/slot-machine-game/issues"
+  },
+  "homepage": "https://github.com/KianCandelario/slot-machine-game#readme",
+  "devDependencies": {
+    "vite": "^6.2.0"
+  },
+  "dependencies": {
+    "pixi.js": "^8.8.1",
+    "typescript": "^5.8.2"
+  }
+}
