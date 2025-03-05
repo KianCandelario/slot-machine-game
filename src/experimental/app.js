@@ -45,7 +45,43 @@ const devtools_1 = require("@pixi/devtools");
     app.stage.addChild(logoShadow);
     app.stage.addChild(logo);
     // ---------------
+    // Reel
+    // Load the textures
+    await pixi_js_1.Assets.load([
+        "../assets/japanese_theme/slot_symbols/masks/mask1.png",
+        "../assets/japanese_theme/slot_symbols/masks/mask2.png",
+        "../assets/japanese_theme/slot_symbols/masks/mask3.png",
+        "../assets/japanese_theme/slot_symbols/masks/mask4.png",
+        "../assets/japanese_theme/slot_symbols/others/bonus.png",
+        "../assets/japanese_theme/slot_symbols/others/wild.png",
+        "../assets/japanese_theme/slot_symbols/chars/9.png",
+        "../assets/japanese_theme/slot_symbols/chars/10.png",
+        "../assets/japanese_theme/slot_symbols/chars/A.png",
+        "../assets/japanese_theme/slot_symbols/chars/J.png",
+        "../assets/japanese_theme/slot_symbols/chars/K.png",
+        "../assets/japanese_theme/slot_symbols/chars/Q.png",
+    ]);
+    // Create textures for every slot
+    const slot_textures = [
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/masks/mask1.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/masks/mask2.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/masks/mask3.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/masks/mask4.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/others/bonus.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/others/wild.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/9.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/10.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/A.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/J.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/K.png"),
+        pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/Q.png"),
+    ];
+    // ---------------
     // Window Frame
+    const reels = [];
+    const reel_container = new pixi_js_1.Container();
+    const reel_width = ((window.innerWidth - 1000) / 5) - 100;
+    const symbol_size = 150;
     const frame = new pixi_js_1.Graphics({
         x: (window.innerWidth - 1000) / 2,
         y: (window.innerHeight - 600) / 2
@@ -55,6 +91,29 @@ const devtools_1 = require("@pixi/devtools");
     frame.alpha = 0.5;
     frame.zIndex = 10;
     app.stage.addChild(frame);
+    for (let i = 0; i < 5; i++) {
+        const reel_wrapp = new pixi_js_1.Container();
+        reel_wrapp.x = i * reel_width;
+        reel_container.addChild(reel_wrapp);
+        const reel = {
+            container: reel_wrapp,
+            symbols: [],
+            position: 0,
+            prev_position: 0,
+            blur: new pixi_js_1.BlurFilter()
+        };
+        reel.blur.blurX = 0;
+        reel.blur.blurY = 0;
+        reel_wrapp.filters = [reel.blur];
+        for (let j = 0; j < 4; j++) {
+            // Randomize the symbols
+            const symbol = new pixi_js_1.Sprite(slot_textures[Math.floor(Math.random() * slot_textures.length)]);
+            symbol.y = j * symbol_size;
+            symbol.scale.x = symbol.scale.y = Math.min(symbol_size / symbol.height, symbol_size / symbol.width);
+            symbol.x = Math.round((symbol_size - symbol.width) / 2);
+            reel.symbols.push(symbol);
+        }
+    }
     // ---------------
     // Masking
     const mask = new pixi_js_1.Graphics()
@@ -118,7 +177,5 @@ const devtools_1 = require("@pixi/devtools");
     app.ticker.add(() => {
         petals.forEach(petal => petal.update());
     });
-    // ---------------
-    // Reel
     document.body.appendChild(app.canvas);
 })();

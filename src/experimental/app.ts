@@ -66,9 +66,46 @@ import { initDevtools } from "@pixi/devtools"
 
 
 
+    // ---------------
+    // Reel
+    // Load the textures
+    await Assets.load([
+        "../assets/japanese_theme/slot_symbols/masks/mask1.png",
+        "../assets/japanese_theme/slot_symbols/masks/mask2.png",
+        "../assets/japanese_theme/slot_symbols/masks/mask3.png",
+        "../assets/japanese_theme/slot_symbols/masks/mask4.png",
+        "../assets/japanese_theme/slot_symbols/others/bonus.png",
+        "../assets/japanese_theme/slot_symbols/others/wild.png",
+        "../assets/japanese_theme/slot_symbols/chars/9.png",
+        "../assets/japanese_theme/slot_symbols/chars/10.png",
+        "../assets/japanese_theme/slot_symbols/chars/A.png",
+        "../assets/japanese_theme/slot_symbols/chars/J.png",
+        "../assets/japanese_theme/slot_symbols/chars/K.png",
+        "../assets/japanese_theme/slot_symbols/chars/Q.png",
+    ])
 
+    // Create textures for every slot
+    const slot_textures = [
+        Texture.from("../assets/japanese_theme/slot_symbols/masks/mask1.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/masks/mask2.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/masks/mask3.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/masks/mask4.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/others/bonus.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/others/wild.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/chars/9.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/chars/10.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/chars/A.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/chars/J.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/chars/K.png"),
+        Texture.from("../assets/japanese_theme/slot_symbols/chars/Q.png"),
+    ]
+    
     // ---------------
     // Window Frame
+    const reels = []
+    const reel_container = new Container()
+    const reel_width = ((window.innerWidth-1000)/5) - 100
+    const symbol_size = 150
     const frame = new Graphics({
         x: (window.innerWidth-1000)/2,
         y: (window.innerHeight-600)/2
@@ -78,6 +115,36 @@ import { initDevtools } from "@pixi/devtools"
     frame.alpha = 0.5
     frame.zIndex = 10
     app.stage.addChild(frame);
+
+    for (let i = 0; i<5; i++) {
+        const reel_wrapp = new Container()
+        reel_wrapp.x = i * reel_width
+
+        reel_container.addChild(reel_wrapp)
+
+        const reel = {
+            container: reel_wrapp,
+            symbols: [],
+            position: 0,
+            prev_position: 0,
+            blur: new BlurFilter()
+        }
+
+        reel.blur.blurX = 0
+        reel.blur.blurY = 0
+        reel_wrapp.filters = [reel.blur]
+
+        for (let j = 0; j < 4; j++) {
+            // Randomize the symbols
+            const symbol = new Sprite(slot_textures[Math.floor(Math.random()*slot_textures.length)])
+
+            symbol.y = j*symbol_size
+            symbol.scale.x = symbol.scale.y = Math.min(symbol_size / symbol.height, symbol_size / symbol.width)
+            symbol.x = Math.round((symbol_size - symbol.width)/2)
+            reel.symbols.push(symbol)     
+        }
+    }
+    
 
     // ---------------
     // Masking
@@ -160,14 +227,6 @@ import { initDevtools } from "@pixi/devtools"
     app.ticker.add(() => {
         petals.forEach(petal => petal.update())
     })
-
-
-
-    // ---------------
-    // Reel
-    
-    
-
 
 
 
