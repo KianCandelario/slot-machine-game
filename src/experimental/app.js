@@ -7,23 +7,23 @@ const devtools_1 = require("@pixi/devtools");
     (0, devtools_1.initDevtools)({ app });
     await app.init({
         resizeTo: window,
+        backgroundColor: 0x000000
     });
     app.canvas.style.position = "absolute";
     // ---------------
     // Background
-    const backgroundTexture = await pixi_js_1.Assets.load('../assets/japanese_theme/bg/bg1.jpg');
+    const backgroundTexture = await pixi_js_1.Assets.load('../assets/japanese_theme/bg/bg.jpg');
     const background = new pixi_js_1.Sprite(backgroundTexture);
     background.height = window.innerHeight;
     background.width = window.innerWidth;
     app.stage.addChild(background);
     // Blur
     const blur_filter = new pixi_js_1.BlurFilter();
-    blur_filter.blurX = 0;
-    blur_filter.blurY = 0;
+    blur_filter.blurX = 1;
+    blur_filter.blurY = 1;
     background.filters = [blur_filter];
     // ---------------
     // Logo with Drop Shadow
-    // Create shadow sprite first
     const logoShadowTexture = await pixi_js_1.Assets.load('../assets/japanese_theme/others/logo.png');
     const logoShadow = new pixi_js_1.Sprite(logoShadowTexture);
     logoShadow.height = 220;
@@ -39,9 +39,10 @@ const devtools_1 = require("@pixi/devtools");
     logo.width = 420;
     logo.x = (window.innerWidth - 400) / 2;
     logo.y = 35;
-    logo.zIndex = 10;
+    // Logo on top of the falling petals
     logoShadow.zIndex = 10;
-    // Add shadow first, then logo
+    logo.zIndex = 10;
+    // Shadow first, then logo
     app.stage.addChild(logoShadow);
     app.stage.addChild(logo);
     // ---------------
@@ -77,55 +78,225 @@ const devtools_1 = require("@pixi/devtools");
         pixi_js_1.Texture.from("../assets/japanese_theme/slot_symbols/chars/Q.png"),
     ];
     // ---------------
-    // Window Frame
-    const reels = [];
-    const reel_container = new pixi_js_1.Container();
-    const reel_width = ((window.innerWidth - 1000) / 5) - 100;
-    const symbol_size = 150;
-    const frame = new pixi_js_1.Graphics({
-        x: (window.innerWidth - 1000) / 2,
-        y: (window.innerHeight - 600) / 2
-    })
-        .roundRect(0, 100, 1000, 600, 20)
+    // Main Game Area
+    // Container for the entire game area
+    const gameArea = new pixi_js_1.Container();
+    gameArea.position.set((window.innerWidth - 1050) / 2, (window.innerHeight - 530) / 2);
+    gameArea.zIndex = 10;
+    app.stage.addChild(gameArea);
+    // Reel configuration
+    const numReels = 5;
+    const reelWidth = 180;
+    const reelGap = 20;
+    const symbolSize = 120;
+    const symbolGap = 30;
+    const symbolsToShow = 3; // Number of visible symbols per reel
+    const totalReelHeight = symbolsToShow * (symbolSize + symbolGap) + symbolGap;
+    const totalReelWidth = numReels * (reelWidth + reelGap) + reelGap;
+    // Frame background - adjusted to fit exactly 5x3 grid
+    const frame = new pixi_js_1.Graphics()
+        .roundRect(0, 70, totalReelWidth + 40, totalReelHeight + 20, 20)
         .fill(0x000000);
     frame.alpha = 0.5;
-    frame.zIndex = 10;
-    app.stage.addChild(frame);
-    for (let i = 0; i < 5; i++) {
-        const reel_wrapp = new pixi_js_1.Container();
-        reel_wrapp.x = i * reel_width;
-        reel_container.addChild(reel_wrapp);
+    gameArea.addChild(frame);
+    // Container for the reels that will be masked
+    const reelsViewport = new pixi_js_1.Container();
+    reelsViewport.position.set(15, 15); // Adjusted position to center in frame
+    gameArea.addChild(reelsViewport);
+    // Create the mask for the reels area - adjusted to match 5x3 grid
+    const reelsMask = new pixi_js_1.Graphics()
+        .roundRect(0, 45, totalReelWidth, totalReelHeight, 15)
+        .fill(0xFFFFFF);
+    reelsViewport.addChild(reelsMask);
+    reelsViewport.mask = reelsMask;
+    // Create a container for all reels
+    const reelsContainer = new pixi_js_1.Container();
+    reelsContainer.position.set(0, 100); // Position to show exactly 3 rows
+    reelsViewport.addChild(reelsContainer);
+    const reels = [];
+    for (let i = 0; i < numReels; i++) {
+        // Create a container for this reel
+        const reelContainer = new pixi_js_1.Container();
+        reelContainer.position.set(i * (reelWidth + reelGap), 0);
+        reelsContainer.addChild(reelContainer);
+        // Create the reel object to track its properties
         const reel = {
-            container: reel_wrapp,
+            container: reelContainer,
             symbols: [],
             position: 0,
-            prev_position: 0,
+            prevPosition: 0,
             blur: new pixi_js_1.BlurFilter()
         };
+        // No blur by default
         reel.blur.blurX = 0;
         reel.blur.blurY = 0;
-        reel_wrapp.filters = [reel.blur];
-        for (let j = 0; j < 4; j++) {
-            // Randomize the symbols
-            const symbol = new pixi_js_1.Sprite(slot_textures[Math.floor(Math.random() * slot_textures.length)]);
-            symbol.y = j * symbol_size;
-            symbol.scale.x = symbol.scale.y = Math.min(symbol_size / symbol.height, symbol_size / symbol.width);
-            symbol.x = Math.round((symbol_size - symbol.width) / 2);
+        reelContainer.filters = [reel.blur];
+        // Create the symbols for the reel - we need more symbols to create a smooth animation
+        // But only 3 will be visible at a time
+        const numSymbols = 5; // Create 5 symbols per reel for smooth scrolling
+        for (let j = 0; j < numSymbols; j++) {
+            // Select a random symbol
+            const symbolIndex = Math.floor(Math.random() * slot_textures.length);
+            const symbol = new pixi_js_1.Sprite(slot_textures[symbolIndex]);
+            // Scale to fit the symbol size
+            symbol.scale.x = symbol.scale.y = Math.min(symbolSize / symbol.width, symbolSize / symbol.height);
+            // Center the symbol horizontally within the reel
+            symbol.x = (reelWidth - symbol.width * symbol.scale.x) / 2;
+            // Position vertically - start with standard positions but only 3 will be visible
+            symbol.y = j * (symbolSize + symbolGap);
+            // Hide symbols that are outside the visible 3-row area
+            symbol.visible = j < symbolsToShow;
+            // Add directly to the reel container
+            reelContainer.addChild(symbol);
             reel.symbols.push(symbol);
         }
+        reels.push(reel);
     }
     // ---------------
-    // Masking
-    const mask = new pixi_js_1.Graphics()
-        .roundRect(0, 100, 900, 500, 20)
-        .fill(0xFFFFFF);
-    const mask_container = new pixi_js_1.Container();
-    mask_container.mask = mask;
-    mask_container.addChild(mask);
-    mask_container.position.set(4, 4);
-    frame.addChild(mask_container);
+    // Spin Button
+    const buttonContainer = new pixi_js_1.Container();
+    buttonContainer.position.set(window.innerWidth / 2, window.innerHeight - 85);
+    buttonContainer.cursor = "pointer";
+    buttonContainer.zIndex = 20;
+    const buttonSymbolTexture = await pixi_js_1.Assets.load("../assets/japanese_theme/others/button.png");
+    const buttonSymbol = new pixi_js_1.Sprite(buttonSymbolTexture);
+    buttonSymbol.anchor.set(0.5);
+    buttonSymbol.scale.set(.25);
+    buttonContainer.interactive = true;
+    buttonContainer.addChild(buttonSymbol);
+    app.stage.addChild(buttonContainer);
     // ---------------
-    // Petals Container
+    // Utility functions
+    // for smooth animations
+    const tweening = [];
+    function tweenTo(object, property, target, time, easing, onchange, oncomplete) {
+        const tween = {
+            object,
+            property,
+            propertyBeginValue: object[property],
+            target,
+            easing,
+            time,
+            change: onchange,
+            complete: oncomplete,
+            start: Date.now(),
+        };
+        tweening.push(tween);
+        return tween;
+    }
+    // Linear interpolation function
+    function lerp(a1, a2, t) {
+        return a1 * (1 - t) + a2 * t;
+    }
+    // Backout easing function for realistic slot machine deceleration
+    function backout(amount) {
+        return (t) => --t * t * ((amount + 1) * t + amount) + 1;
+    }
+    // Update the ticker to process tweens
+    app.ticker.add(() => {
+        const now = Date.now();
+        const remove = [];
+        for (let i = 0; i < tweening.length; i++) {
+            const t = tweening[i];
+            const phase = Math.min(1, (now - t.start) / t.time);
+            t.object[t.property] = lerp(t.propertyBeginValue, t.target, t.easing(phase));
+            if (t.change)
+                t.change(t);
+            if (phase === 1) {
+                t.object[t.property] = t.target;
+                if (t.complete)
+                    t.complete(t);
+                remove.push(t);
+            }
+        }
+        for (let i = 0; i < remove.length; i++) {
+            tweening.splice(tweening.indexOf(remove[i]), 1);
+        }
+    });
+    // Spin Functionality
+    let running = false;
+    // Improved startSpin function
+    function startSpin() {
+        if (running)
+            return;
+        running = true;
+        // Disable button during spin
+        buttonContainer.interactive = false;
+        // Prepare all reels for spinning
+        for (const reel of reels) {
+            // Make all symbols visible before spinning
+            for (const symbol of reel.symbols) {
+                symbol.visible = true;
+            }
+        }
+        // Start each reel with a delay and smoother animation
+        for (let i = 0; i < reels.length; i++) {
+            const r = reels[i];
+            // Random number of rotations plus offset based on reel position
+            const extra = Math.floor(Math.random() * 3);
+            const target = r.position + 10 + i * 5 + extra;
+            // Calculate time based on reel index for sequential stopping
+            const time = 2500 + i * 600 + extra * 600;
+            // Use the tweening function for smoother animation
+            tweenTo(r, 'position', target, time, backout(0.5), undefined, i === reels.length - 1 ? () => {
+                // All reels stopped
+                running = false;
+                buttonContainer.interactive = true;
+                // Ensure only 3 symbols are visible per reel when stopped
+                for (const reel of reels) {
+                    for (let j = 0; j < reel.symbols.length; j++) {
+                        const symbol = reel.symbols[j];
+                        // Calculate if this symbol should be in the visible 3-row area
+                        const slotHeight = symbolSize + symbolGap;
+                        const symbolPosition = ((reel.position + j) % reel.symbols.length) * slotHeight;
+                        symbol.visible = symbolPosition >= 0 && symbolPosition < symbolsToShow * slotHeight;
+                    }
+                }
+                // TODO: Check for winning combinations here
+            } : undefined);
+        }
+    }
+    // Updated ticker function for proper symbol movement and containment
+    app.ticker.add(() => {
+        // Update the petals animation
+        petals.forEach(petal => petal.update());
+        // Update the slots
+        for (let i = 0; i < reels.length; i++) {
+            const r = reels[i];
+            // Skip update if the reel position hasn't changed
+            if (r.position === r.prevPosition)
+                continue;
+            // Update blur filter based on speed
+            const speed = Math.abs(r.position - r.prevPosition);
+            r.blur.blurY = speed * 8;
+            r.prevPosition = r.position;
+            // Total height of a single symbol slot (including gap)
+            const slotHeight = symbolSize + symbolGap;
+            // Update symbol positions
+            for (let j = 0; j < r.symbols.length; j++) {
+                const symbol = r.symbols[j];
+                const prevY = symbol.y;
+                // Move symbol based on reel position
+                symbol.y = ((r.position + j) % r.symbols.length) * slotHeight;
+                // Control visibility during spinning - only show symbols in the visible area
+                if (running) {
+                    symbol.visible = symbol.y >= 0 && symbol.y < symbolsToShow * slotHeight;
+                }
+                // If symbol moves below visible area, recycle it to the top with new texture
+                if (symbol.y < 0 && prevY > slotHeight) {
+                    // Swap in a new random texture
+                    symbol.texture = slot_textures[Math.floor(Math.random() * slot_textures.length)];
+                    // Adjust scale to maintain proper sizing
+                    symbol.scale.x = symbol.scale.y = Math.min(symbolSize / symbol.width, symbolSize / symbol.height);
+                    // Center the symbol horizontally within the reel
+                    symbol.x = (reelWidth - symbol.width * symbol.scale.x) / 2;
+                }
+            }
+        }
+    });
+    buttonContainer.on("pointerdown", startSpin);
+    // ---------------
+    // Petals
     const petalsContainer = new pixi_js_1.Container();
     app.stage.addChild(petalsContainer);
     // Petal Spawning
@@ -147,7 +318,7 @@ const devtools_1 = require("@pixi/devtools");
             this.x = Math.random() * window.innerWidth;
             this.y = -50; // Start above the screen
             // Movement properties
-            this.speed = Math.random() * 2 + 1; // Falling speed
+            this.speed = Math.random() * 1.7 + 1; // Falling speed
             this.rotationSpeed = (Math.random() - 0.5) * 0.1; // Rotation
             this.wobble = Math.random() * Math.PI * 2; // Initial wobble phase
             this.wobbleSpeed = Math.random() * 0.05 + 0.01; // Wobble speed
@@ -172,10 +343,6 @@ const devtools_1 = require("@pixi/devtools");
         const petal = new Petal(petalTexture);
         petalsContainer.addChild(petal);
         return petal;
-    });
-    // Animation Loop
-    app.ticker.add(() => {
-        petals.forEach(petal => petal.update());
     });
     document.body.appendChild(app.canvas);
 })();
