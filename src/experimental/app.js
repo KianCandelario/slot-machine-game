@@ -296,6 +296,9 @@ const devtools_1 = require("@pixi/devtools");
     });
     buttonContainer.on("pointerdown", startSpin);
     // ---------------
+    // Coin Functionality
+    // --- here --- 
+    // ---------------
     // Petals
     const petalsContainer = new pixi_js_1.Container();
     app.stage.addChild(petalsContainer);

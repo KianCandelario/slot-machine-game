@@ -419,6 +419,12 @@ import { initDevtools } from "@pixi/devtools"
 
 
 
+    // ---------------
+    // Coin Functionality
+    // --- here --- 
+
+
+
 
     // ---------------
     // Petals
