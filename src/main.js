@@ -36,17 +36,23 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Game_1 = require("./core/Game");
+var Game_ts_1 = require("./core/Game.ts");
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var game;
+    var game, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                game = new Game_1.Game();
+                _a.trys.push([0, 2, , 3]);
+                game = new Game_ts_1.Game();
                 return [4 /*yield*/, game.init()];
             case 1:
                 _a.sent();
-                return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 2:
+                error_1 = _a.sent();
+                console.log("Failed to initialize game: ", error_1);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
-}); });
+}); })();

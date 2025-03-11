@@ -1,6 +1,10 @@
-import { Game } from './core/Game'
+import { Game } from './core/Game.ts'
 
 (async() => {
-    const game = new Game()
-    await game.init()
-})
+    try {
+        const game = new Game()
+        await game.init()   
+    } catch (error) {
+        console.log("Failed to initialize game: ", error)
+    }
+})()
