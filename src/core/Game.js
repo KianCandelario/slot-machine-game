@@ -39,27 +39,75 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Game = void 0;
 var pixi_js_1 = require("pixi.js");
 var devtools_1 = require("@pixi/devtools");
+var Background_ts_1 = require("../components/view/Background.ts");
+var Logo_ts_1 = require("../components/view/Logo.ts");
+var GameArea_ts_1 = require("../components/ui/containers/GameArea.ts");
 var Game = /** @class */ (function () {
     function Game() {
+        var _this = this;
+        // Game loop update function
+        this.update = function (delta) {
+            // Update all components
+            _this.background.update(delta);
+            _this.logo.update(delta);
+        };
         this.app = new pixi_js_1.Application();
+        this.background = new Background_ts_1.Background();
+        this.logo = new Logo_ts_1.Logo();
+        this.gameArea = new GameArea_ts_1.GameArea();
     }
     Game.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        // Initialize devtools
                         (0, devtools_1.initDevtools)({ app: this.app });
+                        // Initialize the application
                         return [4 /*yield*/, this.app.init({
                                 resizeTo: window,
-                                backgroundColor: 0x000000
+                                backgroundColor: 0x000000,
                             })];
                     case 1:
+                        // Initialize the application
                         _a.sent();
-                        this.app.canvas.style.position = 'absolute';
-                        return [2 /*return*/];
+                        this.app.canvas.style.position = "absolute";
+                        // Add the canvas to the document
+                        document.body.appendChild(this.app.canvas);
+                        _a.label = 2;
+                    case 2:
+                        _a.trys.push([2, 6, , 7]);
+                        return [4 /*yield*/, this.background.init()];
+                    case 3:
+                        _a.sent();
+                        return [4 /*yield*/, this.logo.init()];
+                    case 4:
+                        _a.sent();
+                        return [4 /*yield*/, this.gameArea.init()];
+                    case 5:
+                        _a.sent();
+                        // Add to the stage
+                        this.app.stage.addChild(this.background);
+                        this.app.stage.addChild(this.logo);
+                        this.app.stage.addChild(this.gameArea);
+                        return [3 /*break*/, 7];
+                    case 6:
+                        error_1 = _a.sent();
+                        console.error("Failed to initialize components:", error_1);
+                        return [3 /*break*/, 7];
+                    case 7: return [2 /*return*/];
                 }
             });
         });
+    };
+    // Clean up event listeners and components when needed
+    Game.prototype.destroy = function () {
+        // The background and logo components now handle their own cleanup
+        this.background.destroy();
+        this.logo.destroy();
+        // Clean up the application
+        this.app.destroy();
     };
     return Game;
 }());
