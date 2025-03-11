@@ -162,7 +162,8 @@ import { initDevtools } from "@pixi/devtools"
     
     const reels: { 
         container: Container<ContainerChild>; 
-        symbols: Sprite[]; position: number; 
+        symbols: Sprite[]; 
+        position: number; 
         prevPosition: number; 
         blur: BlurFilter 
     }[] = []
@@ -183,8 +184,8 @@ import { initDevtools } from "@pixi/devtools"
         }
         
         // No blur by default
-        reel.blur.blurX = 0
-        reel.blur.blurY = 0
+        reel.blur.strengthX = 0
+        reel.blur.strengthY = 0
         reelContainer.filters = [reel.blur]
         
         // Create the symbols for the reel - we need more symbols to create a smooth animation
