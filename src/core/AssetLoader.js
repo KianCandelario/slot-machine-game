@@ -76,6 +76,36 @@ var AssetPreloader = /** @class */ (function () {
     AssetPreloader.getTextures = function () {
         return this.textures;
     };
+    AssetPreloader.loadButtonTexture = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this;
+                        return [4 /*yield*/, pixi_js_1.Assets.load("../assets/japanese_theme/others/button.png")];
+                    case 1:
+                        _a.buttonTexture = _b.sent();
+                        return [2 /*return*/, this.buttonTexture];
+                }
+            });
+        });
+    };
+    AssetPreloader.loadPetalTexture = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this;
+                        return [4 /*yield*/, pixi_js_1.Assets.load("../assets/japanese_theme/others/petals.png")];
+                    case 1:
+                        _a.petalTexture = _b.sent();
+                        return [2 /*return*/, this.petalTexture];
+                }
+            });
+        });
+    };
     AssetPreloader.textures = [];
     return AssetPreloader;
 }());
