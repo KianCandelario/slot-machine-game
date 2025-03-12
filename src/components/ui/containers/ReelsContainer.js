@@ -51,54 +51,73 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GameArea = void 0;
+exports.ReelsContainer = void 0;
 var pixi_js_1 = require("pixi.js");
 var Component_ts_1 = require("../../../core/Component.ts");
 var reelconfig_ts_1 = require("../../../lib/reelconfig.ts");
-var ReelsViewport_ts_1 = require("./ReelsViewport.ts");
-var GameArea = /** @class */ (function (_super) {
-    __extends(GameArea, _super);
-    function GameArea() {
+var AssetLoader_ts_1 = require("../../../core/AssetLoader.ts");
+var ReelsContainer = /** @class */ (function (_super) {
+    __extends(ReelsContainer, _super);
+    function ReelsContainer() {
         var _this = _super.call(this) || this;
-        _this.frame = new pixi_js_1.Graphics()
-            .roundRect(0, 70, reelconfig_ts_1.TOTAL_REEL_WIDTH + 20, reelconfig_ts_1.TOTAL_REEL_HEIGHT + 20, 20)
-            .fill(0x000000)
-            .stroke({
-            width: 7,
-            color: 0xfdf9ed,
-            alignment: 1,
-        });
-        _this.reelsViewport = new ReelsViewport_ts_1.ReelsViewport();
+        _this.reels = []; // Array of ReelConfig objects
         return _this;
     }
-    GameArea.prototype.init = function () {
+    ReelsContainer.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
+            var slotTextures, i, reelContainer, reel, j, symbolIndex, symbol;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0:
-                        this.frame.alpha = 0.5;
-                        this.addChild(this.frame);
-                        // Initialize the ReelsViewport before adding it
-                        return [4 /*yield*/, this.reelsViewport.init()];
+                    case 0: 
+                    // Load textures using the AssetPreloader
+                    return [4 /*yield*/, AssetLoader_ts_1.AssetPreloader.loadTextures()];
                     case 1:
-                        // Initialize the ReelsViewport before adding it
+                        // Load textures using the AssetPreloader
                         _a.sent();
-                        this.addChild(this.reelsViewport);
-                        this.recalculateLayout(window.innerWidth, window.innerHeight);
+                        slotTextures = AssetLoader_ts_1.AssetPreloader.getTextures();
+                        // Set the position of the reels container
+                        this.position.set(0, 100); // Adjusted to show exactly 3 rows
+                        for (i = 0; i < reelconfig_ts_1.NUM_REEL; i++) {
+                            reelContainer = new pixi_js_1.Container();
+                            reelContainer.position.set(i * (reelconfig_ts_1.REEL_WIDTH + reelconfig_ts_1.REEL_GAP), 0);
+                            this.addChild(reelContainer);
+                            reel = {
+                                container: reelContainer,
+                                symbols: [],
+                                position: 0,
+                                prevPosition: 0,
+                                blur: new pixi_js_1.BlurFilter(),
+                            };
+                            // No blur by default
+                            reel.blur.strengthX = 0;
+                            reel.blur.strengthY = 0;
+                            reelContainer.filters = [reel.blur];
+                            // Create the symbols for the reel
+                            for (j = 0; j < reelconfig_ts_1.NUM_SYMBOLS; j++) {
+                                symbolIndex = Math.floor(Math.random() * slotTextures.length);
+                                symbol = new pixi_js_1.Sprite(slotTextures[symbolIndex]);
+                                // Scale to fit the symbol size
+                                symbol.scale.x = symbol.scale.y = Math.min(reelconfig_ts_1.SYMBOL_SIZE / symbol.width, reelconfig_ts_1.SYMBOL_SIZE / symbol.height);
+                                // Center the symbol horizontally within the reel
+                                symbol.x = (reelconfig_ts_1.REEL_WIDTH - symbol.width * symbol.scale.x) / 2;
+                                // Position vertically
+                                symbol.y = j * (reelconfig_ts_1.SYMBOL_SIZE + reelconfig_ts_1.SYMBOL_GAP);
+                                // Hide symbols that are outside the visible 3-row area
+                                symbol.visible = j < reelconfig_ts_1.SYMBOL_TO_SHOW;
+                                // Add directly to the reel container
+                                reelContainer.addChild(symbol);
+                                reel.symbols.push(symbol);
+                            }
+                            this.reels.push(reel); // Push the ReelConfig object into the REELCONFIG array
+                        }
                         return [2 /*return*/];
                 }
             });
         });
     };
-    GameArea.prototype.update = function () { };
-    GameArea.prototype.recalculateLayout = function (width, height) {
-        this.frame.position.set((window.innerWidth - reelconfig_ts_1.TOTAL_REEL_WIDTH) / 2 - 40, (window.innerHeight - reelconfig_ts_1.TOTAL_REEL_HEIGHT) / 2);
-        // Position the ReelsViewport relative to the frame
-        this.reelsViewport.position.set(this.frame.position.x + 10, // Adjust for padding
-        this.frame.position.y + 10 // Adjust for padding
-        );
+    ReelsContainer.prototype.update = function (delta) {
+        // Update logic for the reels (if needed)
     };
-    GameArea.prototype.destroy = function () { };
-    return GameArea;
+    return ReelsContainer;
 }(Component_ts_1.Component));
-exports.GameArea = GameArea;
+exports.ReelsContainer = ReelsContainer;

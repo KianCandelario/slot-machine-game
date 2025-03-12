@@ -4,9 +4,12 @@ import {
   TOTAL_REEL_HEIGHT,
   TOTAL_REEL_WIDTH,
 } from "../../../lib/reelconfig.ts";
+import { ReelsViewport } from "./ReelsViewport.ts"
 
 export class GameArea extends Component {
   private frame: Graphics;
+  private reelsViewport: ReelsViewport;
+
   constructor() {
     super();
 
@@ -18,11 +21,17 @@ export class GameArea extends Component {
         color: 0xfdf9ed,
         alignment: 1,
       });
+
+    this.reelsViewport = new ReelsViewport()
   }
 
   public async init(): Promise<void> {
-    this.frame.alpha = 0.5;
-    this.addChild(this.frame);
+    this.frame.alpha = 0.5
+    this.addChild(this.frame)
+    // Initialize the ReelsViewport before adding it
+    await this.reelsViewport.init();
+    this.addChild(this.reelsViewport);
+    
 
     this.recalculateLayout(window.innerWidth, window.innerHeight);
   }
@@ -33,6 +42,12 @@ export class GameArea extends Component {
     this.frame.position.set(
       (window.innerWidth - TOTAL_REEL_WIDTH) / 2 - 40,
       (window.innerHeight - TOTAL_REEL_HEIGHT) / 2
+    );
+
+    // Position the ReelsViewport relative to the frame
+    this.reelsViewport.position.set(
+      this.frame.position.x + 10, // Adjust for padding
+      this.frame.position.y + 10  // Adjust for padding
     );
   }
 

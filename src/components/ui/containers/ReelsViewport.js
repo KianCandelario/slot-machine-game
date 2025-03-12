@@ -51,54 +51,47 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GameArea = void 0;
-var pixi_js_1 = require("pixi.js");
+exports.ReelsViewport = void 0;
 var Component_ts_1 = require("../../../core/Component.ts");
+var pixi_js_1 = require("pixi.js");
 var reelconfig_ts_1 = require("../../../lib/reelconfig.ts");
-var ReelsViewport_ts_1 = require("./ReelsViewport.ts");
-var GameArea = /** @class */ (function (_super) {
-    __extends(GameArea, _super);
-    function GameArea() {
+var ReelsContainer_ts_1 = require("./ReelsContainer.ts");
+var ReelsViewport = /** @class */ (function (_super) {
+    __extends(ReelsViewport, _super);
+    function ReelsViewport() {
         var _this = _super.call(this) || this;
-        _this.frame = new pixi_js_1.Graphics()
-            .roundRect(0, 70, reelconfig_ts_1.TOTAL_REEL_WIDTH + 20, reelconfig_ts_1.TOTAL_REEL_HEIGHT + 20, 20)
-            .fill(0x000000)
-            .stroke({
-            width: 7,
-            color: 0xfdf9ed,
-            alignment: 1,
-        });
-        _this.reelsViewport = new ReelsViewport_ts_1.ReelsViewport();
+        // Create the mask for the reels area
+        _this.reelMask = new pixi_js_1.Graphics()
+            .roundRect(0, 45, reelconfig_ts_1.TOTAL_REEL_WIDTH, reelconfig_ts_1.TOTAL_REEL_HEIGHT, 15)
+            .fill(0xffffff);
+        // Create the reels container
+        _this.reelsContainer = new ReelsContainer_ts_1.ReelsContainer();
         return _this;
     }
-    GameArea.prototype.init = function () {
+    ReelsViewport.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        this.frame.alpha = 0.5;
-                        this.addChild(this.frame);
-                        // Initialize the ReelsViewport before adding it
-                        return [4 /*yield*/, this.reelsViewport.init()];
+                        // Set the position of the viewport
+                        this.position.set(15, 15);
+                        // Add the mask to the viewport
+                        this.addChild(this.reelMask);
+                        this.mask = this.reelMask;
+                        // Initialize and add the reels container
+                        return [4 /*yield*/, this.reelsContainer.init()];
                     case 1:
-                        // Initialize the ReelsViewport before adding it
+                        // Initialize and add the reels container
                         _a.sent();
-                        this.addChild(this.reelsViewport);
-                        this.recalculateLayout(window.innerWidth, window.innerHeight);
+                        this.addChild(this.reelsContainer);
                         return [2 /*return*/];
                 }
             });
         });
     };
-    GameArea.prototype.update = function () { };
-    GameArea.prototype.recalculateLayout = function (width, height) {
-        this.frame.position.set((window.innerWidth - reelconfig_ts_1.TOTAL_REEL_WIDTH) / 2 - 40, (window.innerHeight - reelconfig_ts_1.TOTAL_REEL_HEIGHT) / 2);
-        // Position the ReelsViewport relative to the frame
-        this.reelsViewport.position.set(this.frame.position.x + 10, // Adjust for padding
-        this.frame.position.y + 10 // Adjust for padding
-        );
+    ReelsViewport.prototype.update = function (delta) {
+        // Update logic for the reels viewport (if needed)
     };
-    GameArea.prototype.destroy = function () { };
-    return GameArea;
+    return ReelsViewport;
 }(Component_ts_1.Component));
-exports.GameArea = GameArea;
+exports.ReelsViewport = ReelsViewport;
