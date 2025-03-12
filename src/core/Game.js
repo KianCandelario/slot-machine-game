@@ -44,6 +44,7 @@ var Logo_ts_1 = require("../components/view/Logo.ts");
 var GameArea_ts_1 = require("../components/ui/containers/GameArea.ts");
 var SpinButton_ts_1 = require("../components/ui/SpinButton.ts");
 var Petals_ts_1 = require("../components/view/Petals.ts");
+var Balance_ts_1 = require("../components/ui/Balance.ts");
 var Game = /** @class */ (function () {
     function Game() {
         // Game loop update function
@@ -54,6 +55,7 @@ var Game = /** @class */ (function () {
         this.logo = new Logo_ts_1.Logo();
         this.gameArea = new GameArea_ts_1.GameArea();
         this.spinButton = new SpinButton_ts_1.SpinButton();
+        this.balance = new Balance_ts_1.Balance();
     }
     Game.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -77,7 +79,7 @@ var Game = /** @class */ (function () {
                         document.body.appendChild(this.app.canvas);
                         _a.label = 2;
                     case 2:
-                        _a.trys.push([2, 8, , 9]);
+                        _a.trys.push([2, 9, , 10]);
                         return [4 /*yield*/, this.background.init()];
                     case 3:
                         _a.sent();
@@ -90,27 +92,33 @@ var Game = /** @class */ (function () {
                         return [4 /*yield*/, this.spinButton.init()];
                     case 6:
                         _a.sent();
+                        return [4 /*yield*/, this.balance.init()
+                            // Add to the stage
+                        ];
+                    case 7:
+                        _a.sent();
                         // Add to the stage
                         this.app.stage.addChild(this.background);
                         this.app.stage.addChild(this.petalsComponent);
                         this.app.stage.addChild(this.logo);
                         this.app.stage.addChild(this.gameArea);
                         this.app.stage.addChild(this.spinButton);
+                        this.app.stage.addChild(this.balance);
                         // Initialize the component
                         return [4 /*yield*/, this.petalsComponent.init()];
-                    case 7:
+                    case 8:
                         // Initialize the component
                         _a.sent();
                         // Add the component's update method to the ticker
                         this.app.ticker.add(function (ticker) {
                             _this.petalsComponent.update(ticker.deltaTime);
                         });
-                        return [3 /*break*/, 9];
-                    case 8:
+                        return [3 /*break*/, 10];
+                    case 9:
                         error_1 = _a.sent();
                         console.error("Failed to initialize components:", error_1);
-                        return [3 /*break*/, 9];
-                    case 9: return [2 /*return*/];
+                        return [3 /*break*/, 10];
+                    case 10: return [2 /*return*/];
                 }
             });
         });
