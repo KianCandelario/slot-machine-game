@@ -1,4 +1,5 @@
 const NUM_REEL: number = 5;
+const NUM_SYMBOLS: number = 5;
 const REEL_WIDTH: number = 180;
 const REEL_GAP: number = 20;
 const SYMBOL_SIZE: number = 120;
@@ -10,6 +11,7 @@ const TOTAL_REEL_WIDTH: number = NUM_REEL * (REEL_WIDTH + REEL_GAP) + REEL_GAP;
 
 export {
   NUM_REEL,
+  NUM_SYMBOLS,
   REEL_WIDTH,
   REEL_GAP,
   SYMBOL_GAP,

@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TOTAL_REEL_WIDTH = exports.TOTAL_REEL_HEIGHT = exports.SYMBOL_TO_SHOW = exports.SYMBOL_SIZE = exports.SYMBOL_GAP = exports.REEL_GAP = exports.REEL_WIDTH = exports.NUM_REEL = void 0;
+exports.TOTAL_REEL_WIDTH = exports.TOTAL_REEL_HEIGHT = exports.SYMBOL_TO_SHOW = exports.SYMBOL_SIZE = exports.SYMBOL_GAP = exports.REEL_GAP = exports.REEL_WIDTH = exports.NUM_SYMBOLS = exports.NUM_REEL = void 0;
 var NUM_REEL = 5;
 exports.NUM_REEL = NUM_REEL;
+var NUM_SYMBOLS = 5;
+exports.NUM_SYMBOLS = NUM_SYMBOLS;
 var REEL_WIDTH = 180;
 exports.REEL_WIDTH = REEL_WIDTH;
 var REEL_GAP = 20;
