@@ -61,7 +61,7 @@ var GameArea = /** @class */ (function (_super) {
     function GameArea() {
         var _this = _super.call(this) || this;
         _this.frame = new pixi_js_1.Graphics()
-            .roundRect(0, 70, reelconfig_ts_1.TOTAL_REEL_WIDTH + 20, reelconfig_ts_1.TOTAL_REEL_HEIGHT + 20, 20)
+            .roundRect(0, 65, reelconfig_ts_1.TOTAL_REEL_WIDTH + 20, reelconfig_ts_1.TOTAL_REEL_HEIGHT + 20, 20)
             .fill(0x000000)
             .stroke({
             width: 7,

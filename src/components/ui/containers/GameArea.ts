@@ -14,7 +14,7 @@ export class GameArea extends Component {
     super();
 
     this.frame = new Graphics()
-      .roundRect(0, 70, TOTAL_REEL_WIDTH + 20, TOTAL_REEL_HEIGHT + 20, 20)
+      .roundRect(0, 65, TOTAL_REEL_WIDTH + 20, TOTAL_REEL_HEIGHT + 20, 20)
       .fill(0x000000)
       .stroke({
         width: 7,
