@@ -4,6 +4,7 @@ export class AssetPreloader {
     private static textures: Texture[] = [];
     private static buttonTexture: Texture;
     private static petalTexture: Texture;
+    private static coinTexture: Texture;
 
     public static async loadTextures(): Promise<void> {
         const texturePaths = [
@@ -40,5 +41,10 @@ export class AssetPreloader {
     public static async loadPetalTexture(): Promise<Texture> {
         this.petalTexture = await Assets.load("../assets/japanese_theme/others/petals.png")
         return this.petalTexture
+    }
+
+    public static async loadCoinTexture(): Promise<Texture> {
+        this.coinTexture = await Assets.load("../assets/japanese_theme/others/coin-icon.png")
+        return this.coinTexture
     }
 }

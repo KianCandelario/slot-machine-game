@@ -106,6 +106,21 @@ var AssetPreloader = /** @class */ (function () {
             });
         });
     };
+    AssetPreloader.loadCoinTexture = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = this;
+                        return [4 /*yield*/, pixi_js_1.Assets.load("../assets/japanese_theme/others/coin-icon.png")];
+                    case 1:
+                        _a.coinTexture = _b.sent();
+                        return [2 /*return*/, this.coinTexture];
+                }
+            });
+        });
+    };
     AssetPreloader.textures = [];
     return AssetPreloader;
 }());
