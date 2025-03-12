@@ -103,7 +103,10 @@ var Balance = /** @class */ (function (_super) {
                             },
                         });
                         balance = { value: 1000 };
-                        money = new pixi_js_1.Text(balance.value.toString(), style);
+                        money = new pixi_js_1.Text({
+                            text: balance.value.toString(),
+                            style: style
+                        });
                         money.position.x += 105;
                         money.position.y += 32;
                         // Add the money text to the display list
