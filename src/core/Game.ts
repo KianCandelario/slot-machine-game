@@ -4,17 +4,20 @@ import { Background } from "../components/view/Background.ts";
 import { Logo } from "../components/view/Logo.ts";
 import { GameArea } from "../components/ui/containers/GameArea.ts"
 import { SpinButton } from "../components/ui/SpinButton.ts";
+import { Petals } from "../components/view/Petals.ts";
 
 export class Game {
     private app: Application;
     private background: Background;
     private logo: Logo;
-    private gameArea: GameArea
-    private spinButton: SpinButton
+    private gameArea: GameArea;
+    private spinButton: SpinButton;
+    private petalsComponent: Petals;
 
     constructor() {
         this.app = new Application();
         this.background = new Background();
+        this.petalsComponent = new Petals();
         this.logo = new Logo();
         this.gameArea = new GameArea();
         this.spinButton = new SpinButton();
@@ -44,20 +47,27 @@ export class Game {
 
             // Add to the stage
             this.app.stage.addChild(this.background);
+            this.app.stage.addChild(this.petalsComponent);
             this.app.stage.addChild(this.logo);
-            this.app.stage.addChild(this.gameArea)
-            this.app.stage.addChild(this.spinButton)
-        } catch (error) {
-            console.error("Failed to initialize components:", error);
+            this.app.stage.addChild(this.gameArea);
+            this.app.stage.addChild(this.spinButton);
+            
+
+            // Initialize the component
+            await this.petalsComponent.init();
+
+            // Add the component's update method to the ticker
+            this.app.ticker.add((ticker) => {
+                this.petalsComponent.update(ticker.deltaTime);
+            });
+
+            } catch (error) {
+                console.error("Failed to initialize components:", error);
+            }
         }
-    }
 
     // Game loop update function
-    private update = (delta: number): void => {
-        // Update all components
-        this.background.update(delta);
-        this.logo.update(delta);
-    };
+    private update = (delta: number): void => {};
 
     // Clean up event listeners and components when needed
     public destroy(): void {

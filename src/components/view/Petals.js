@@ -51,10 +51,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PetalsComponent = void 0;
+exports.Petals = void 0;
 var pixi_js_1 = require("pixi.js");
+var AssetLoader_ts_1 = require("../../core/AssetLoader.ts");
 var Component_ts_1 = require("../../core/Component.ts");
-// Petal Class
 var Petal = /** @class */ (function (_super) {
     __extends(Petal, _super);
     function Petal(texture) {
@@ -63,7 +63,6 @@ var Petal = /** @class */ (function (_super) {
         _this.width = Math.random() * 25 + 10;
         _this.height = _this.width;
         _this.alpha = Math.random() * 0.7 + 0.4;
-        console.log('Petal alpha:', _this.alpha); // Debug alpha
         // Starting position
         _this.x = Math.random() * window.innerWidth;
         _this.y = -50; // Start above the screen
@@ -90,66 +89,83 @@ var Petal = /** @class */ (function (_super) {
     };
     return Petal;
 }(pixi_js_1.Sprite));
-var PetalsComponent = /** @class */ (function (_super) {
-    __extends(PetalsComponent, _super);
-    function PetalsComponent() {
+var Petals = /** @class */ (function (_super) {
+    __extends(Petals, _super);
+    function Petals() {
         var _this = _super.call(this) || this;
         _this.petals = [];
+        _this.tweening = [];
         _this.PETAL_COUNT = 50;
-        // Method to handle window resize events
-        _this.resize = function () {
-            // Reset petal positions if needed
-            for (var _i = 0, _a = _this.petals; _i < _a.length; _i++) {
-                var petal = _a[_i];
-                if (petal.x > window.innerWidth) {
-                    petal.x = Math.random() * window.innerWidth;
-                }
-            }
-        };
+        _this.petalsContainer = new pixi_js_1.Container();
+        _this.addChild(_this.petalsContainer);
         return _this;
     }
-    PetalsComponent.prototype.init = function () {
+    Petals.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, error_1;
+            var petalTexture;
             var _this = this;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        _b.trys.push([0, 2, , 3]);
-                        // Load petal texture
-                        _a = this;
-                        return [4 /*yield*/, pixi_js_1.Assets.load('../assets/japanese_theme/others/petals.png')];
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, AssetLoader_ts_1.AssetPreloader.loadPetalTexture()];
                     case 1:
-                        // Load petal texture
-                        _a.petalTexture = _b.sent();
-                        console.log('Petal texture loaded:', this.petalTexture); // Debug texture loading
-                        // Create petals
+                        petalTexture = _a.sent();
+                        // Spawn Petals
                         this.petals = Array.from({ length: this.PETAL_COUNT }, function () {
-                            var petal = new Petal(_this.petalTexture);
-                            _this.addChild(petal);
+                            var petal = new Petal(petalTexture);
+                            _this.petalsContainer.addChild(petal);
                             return petal;
                         });
-                        return [3 /*break*/, 3];
-                    case 2:
-                        error_1 = _b.sent();
-                        console.error('Failed to load petals:', error_1);
-                        throw error_1;
-                    case 3: return [2 /*return*/];
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    PetalsComponent.prototype.update = function (delta) {
-        console.log('Updating petals...'); // Debug update loop
+    // Match the Component abstract method signature: update(delta: number)
+    Petals.prototype.update = function (delta) {
+        // Update all petals
         for (var _i = 0, _a = this.petals; _i < _a.length; _i++) {
             var petal = _a[_i];
             petal.update();
         }
+        // Update tweens
+        var now = Date.now();
+        var remove = [];
+        for (var i = 0; i < this.tweening.length; i++) {
+            var t = this.tweening[i];
+            var phase = Math.min(1, (now - t.start) / t.time);
+            t.object[t.property] = this.lerp(t.propertyBeginValue, t.target, t.easing(phase));
+            if (t.change)
+                t.change(t);
+            if (phase === 1) {
+                t.object[t.property] = t.target;
+                if (t.complete)
+                    t.complete(t);
+                remove.push(t);
+            }
+        }
+        for (var i = 0; i < remove.length; i++) {
+            this.tweening.splice(this.tweening.indexOf(remove[i]), 1);
+        }
     };
-    PetalsComponent.prototype.destroy = function () {
-        window.removeEventListener('resize', this.resize);
-        _super.prototype.destroy.call(this);
+    // Utility function for linear interpolation
+    Petals.prototype.lerp = function (start, end, amount) {
+        return start + (end - start) * amount;
     };
-    return PetalsComponent;
+    // Add a new tween
+    Petals.prototype.addTween = function (tween) {
+        this.tweening.push(tween);
+    };
+    // Override the recalculateLayout method to handle resize
+    Petals.prototype.recalculateLayout = function (width, height) {
+        // Adjust petals position if needed when window is resized
+        for (var _i = 0, _a = this.petals; _i < _a.length; _i++) {
+            var petal = _a[_i];
+            // Keep petals within the new window width if they're outside
+            if (petal.x > width) {
+                petal.x = Math.random() * width;
+            }
+        }
+    };
+    return Petals;
 }(Component_ts_1.Component));
-exports.PetalsComponent = PetalsComponent;
+exports.Petals = Petals;
