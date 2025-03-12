@@ -42,6 +42,7 @@ var devtools_1 = require("@pixi/devtools");
 var Background_ts_1 = require("../components/view/Background.ts");
 var Logo_ts_1 = require("../components/view/Logo.ts");
 var GameArea_ts_1 = require("../components/ui/containers/GameArea.ts");
+var SpinButton_ts_1 = require("../components/ui/SpinButton.ts");
 var Game = /** @class */ (function () {
     function Game() {
         var _this = this;
@@ -55,6 +56,7 @@ var Game = /** @class */ (function () {
         this.background = new Background_ts_1.Background();
         this.logo = new Logo_ts_1.Logo();
         this.gameArea = new GameArea_ts_1.GameArea();
+        this.spinButton = new SpinButton_ts_1.SpinButton();
     }
     Game.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -77,7 +79,7 @@ var Game = /** @class */ (function () {
                         document.body.appendChild(this.app.canvas);
                         _a.label = 2;
                     case 2:
-                        _a.trys.push([2, 6, , 7]);
+                        _a.trys.push([2, 7, , 8]);
                         return [4 /*yield*/, this.background.init()];
                     case 3:
                         _a.sent();
@@ -87,16 +89,20 @@ var Game = /** @class */ (function () {
                         return [4 /*yield*/, this.gameArea.init()];
                     case 5:
                         _a.sent();
+                        return [4 /*yield*/, this.spinButton.init()];
+                    case 6:
+                        _a.sent();
                         // Add to the stage
                         this.app.stage.addChild(this.background);
                         this.app.stage.addChild(this.logo);
                         this.app.stage.addChild(this.gameArea);
-                        return [3 /*break*/, 7];
-                    case 6:
+                        this.app.stage.addChild(this.spinButton);
+                        return [3 /*break*/, 8];
+                    case 7:
                         error_1 = _a.sent();
                         console.error("Failed to initialize components:", error_1);
-                        return [3 /*break*/, 7];
-                    case 7: return [2 /*return*/];
+                        return [3 /*break*/, 8];
+                    case 8: return [2 /*return*/];
                 }
             });
         });
