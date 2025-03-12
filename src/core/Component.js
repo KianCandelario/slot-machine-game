@@ -28,7 +28,7 @@ var Component = /** @class */ (function (_super) {
         return _this;
     }
     Component.prototype.onResize = function () {
-        // Recalculate positions, sizes, or scales based on the new window dimensions
+        // recalculate positions, sizes, or scales based on the new window dimensions
         this.recalculateLayout(window.innerWidth, window.innerHeight);
     };
     Component.prototype.recalculateLayout = function (width, height) {

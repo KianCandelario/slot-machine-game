@@ -15,7 +15,7 @@ export abstract class Component extends Container {
   public abstract update(delta: number): void;
 
   protected onResize(): void {
-    // Recalculate positions, sizes, or scales based on the new window dimensions
+    // recalculate positions, sizes, or scales based on the new window dimensions
     this.recalculateLayout(window.innerWidth, window.innerHeight);
   }
 
