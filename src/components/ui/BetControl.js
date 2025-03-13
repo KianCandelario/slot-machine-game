@@ -54,6 +54,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BetControl = void 0;
 var pixi_js_1 = require("pixi.js");
 var Component_ts_1 = require("../../core/Component.ts");
+var UITemplate_ts_1 = require("../../templates/UITemplate.ts");
 var BetControl = /** @class */ (function (_super) {
     __extends(BetControl, _super);
     function BetControl() {
@@ -92,32 +93,46 @@ var BetControl = /** @class */ (function (_super) {
                 distance: 7
             }
         });
+        _this.decreaseButton = new UITemplate_ts_1.DecreaseButton("-");
+        _this.increaseButton = new UITemplate_ts_1.IncreaseButton("+");
         return _this;
     }
     BetControl.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
             var betLabel, betAmount, betAmountText;
             return __generator(this, function (_a) {
-                this.position.set((window.innerWidth / 2) + 140, window.innerHeight - 135);
-                this.betFrame.alpha = 0.5;
-                this.mask = this.betMask;
-                this.addChild(this.betFrame);
-                this.addChild(this.betMask);
-                betLabel = new pixi_js_1.Text({
-                    text: "BET",
-                    style: this.betTextStyle
-                });
-                betLabel.position.set(25, 15);
-                this.addChild(betLabel);
-                betAmount = { value: 5 };
-                betAmountText = new pixi_js_1.Text({
-                    text: betAmount.value.toString(),
-                    style: this.betAmountStyle
-                });
-                betAmountText.anchor.set(0.5);
-                betAmountText.position.set(150, 50);
-                this.addChild(betAmountText);
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.decreaseButton.init()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.increaseButton.init()];
+                    case 2:
+                        _a.sent();
+                        this.position.set((window.innerWidth / 2) + 140, window.innerHeight - 135);
+                        this.betFrame.alpha = 0.5;
+                        this.mask = this.betMask;
+                        this.addChild(this.betFrame);
+                        this.addChild(this.betMask);
+                        betLabel = new pixi_js_1.Text({
+                            text: "BET",
+                            style: this.betTextStyle
+                        });
+                        betLabel.position.set(25, 15);
+                        this.addChild(betLabel);
+                        betAmount = { value: 5 };
+                        betAmountText = new pixi_js_1.Text({
+                            text: betAmount.value.toString(),
+                            style: this.betAmountStyle
+                        });
+                        betAmountText.anchor.set(0.5);
+                        betAmountText.position.set(150, 50);
+                        this.addChild(this.decreaseButton);
+                        this.decreaseButton.position.set(100, 60);
+                        this.addChild(betAmountText);
+                        this.addChild(this.increaseButton);
+                        this.increaseButton.position.set(200, 60);
+                        return [2 /*return*/];
+                }
             });
         });
     };

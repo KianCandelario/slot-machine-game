@@ -1,11 +1,14 @@
 import { Graphics, Text, TextStyle } from "pixi.js";
 import { Component } from "../../core/Component.ts";
+import { DecreaseButton, IncreaseButton } from "../../templates/UITemplate.ts";
 
 export class BetControl extends Component{
     private betFrame: Graphics
     private betMask: Graphics
     private betTextStyle: TextStyle
     private betAmountStyle: TextStyle
+    private decreaseButton: DecreaseButton
+    private increaseButton: IncreaseButton
 
     constructor() {
         super()
@@ -19,10 +22,12 @@ export class BetControl extends Component{
                 alignment: 1
             })
 
+
         this.betMask = new Graphics()
             .roundRect(0, 0, 250, 100, 25)
             .fill(0xFFFFFF)
     
+
         this.betTextStyle = new TextStyle({
             fill: '#fdf9ed',
             fontFamily: 'Nanum Gothic Coding',
@@ -48,9 +53,15 @@ export class BetControl extends Component{
                 distance: 7
             }
         })
+
+        this.decreaseButton = new DecreaseButton("-")
+        this.increaseButton = new IncreaseButton("+")
     }
 
     public async init(): Promise<void>{
+        await this.decreaseButton.init()
+        await this.increaseButton.init()
+
         this.position.set(
             (window.innerWidth/2)+140,
             window.innerHeight-135
@@ -78,8 +89,12 @@ export class BetControl extends Component{
         })
         betAmountText.anchor.set(0.5)
         betAmountText.position.set(150, 50)
+        this.addChild(this.decreaseButton)
+        this.decreaseButton.position.set(100, 60)
+
         this.addChild(betAmountText)
-        
+        this.addChild(this.increaseButton)
+        this.increaseButton.position.set(200, 60)
     }
 
     public update(): void {}
