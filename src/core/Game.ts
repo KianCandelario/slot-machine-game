@@ -6,6 +6,7 @@ import { GameArea } from "../components/ui/containers/GameArea.ts"
 import { SpinButton } from "../components/ui/SpinButton.ts";
 import { Petals } from "../components/view/Petals.ts";
 import { Balance } from "../components/ui/Balance.ts";
+import { BetControl } from "../components/ui/BetControl.ts";
 
 export class Game {
     private app: Application;
@@ -15,6 +16,7 @@ export class Game {
     private spinButton: SpinButton;
     private petalsComponent: Petals;
     private balance: Balance;
+    private betControl: BetControl;
 
     constructor() {
         this.app = new Application();
@@ -24,6 +26,7 @@ export class Game {
         this.gameArea = new GameArea();
         this.spinButton = new SpinButton();
         this.balance = new Balance();
+        this.betControl = new BetControl()
     }
 
     public async init(): Promise<void> {
@@ -48,6 +51,7 @@ export class Game {
             await this.gameArea.init();
             await this.spinButton.init();
             await this.balance.init()
+            await this.betControl.init()
 
             // Add to the stage
             this.app.stage.addChild(this.background);
@@ -56,6 +60,7 @@ export class Game {
             this.app.stage.addChild(this.gameArea);
             this.app.stage.addChild(this.spinButton);
             this.app.stage.addChild(this.balance);
+            this.app.stage.addChild(this.betControl);
             
 
             // Initialize the component
