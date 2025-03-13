@@ -1,5 +1,5 @@
 import { Assets, Texture, Sprite, BlurFilter } from "pixi.js";
-import { Component } from "../../core/Component.ts";
+import { Component } from "../../core/Component";
 
 export class Background extends Component {
   private backgroundTexture!: Texture;

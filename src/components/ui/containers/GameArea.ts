@@ -1,10 +1,10 @@
 import { Graphics } from "pixi.js";
-import { Component } from "../../../core/Component.ts";
+import { Component } from "../../../core/Component";
 import {
   TOTAL_REEL_HEIGHT,
   TOTAL_REEL_WIDTH,
-} from "../../../lib/reelconfig.ts";
-import { ReelsViewport } from "./ReelsViewport.ts"
+} from "../../../lib/reelconfig";
+import { ReelsViewport } from "./ReelsViewport"
 
 export class GameArea extends Component {
   private frame: Graphics;

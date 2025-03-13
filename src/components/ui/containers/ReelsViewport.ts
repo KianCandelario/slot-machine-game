@@ -1,7 +1,7 @@
-import { Component } from "../../../core/Component.ts";
+import { Component } from "../../../core/Component";
 import { Graphics } from "pixi.js";
-import { TOTAL_REEL_WIDTH, TOTAL_REEL_HEIGHT } from "../../../lib/reelconfig.ts";
-import { ReelsContainer } from "./ReelsContainer.ts";
+import { TOTAL_REEL_WIDTH, TOTAL_REEL_HEIGHT } from "../../../lib/reelconfig";
+import { ReelsContainer } from "./ReelsContainer";
 
 export class ReelsViewport extends Component {
   private reelsContainer: ReelsContainer; // Use camelCase for instance variables

@@ -4,8 +4,8 @@ import {
     Text,
     TextStyle,
   } from "pixi.js";
-  import { Component } from "../../core/Component.ts";
-  import { AssetPreloader } from "../../core/AssetLoader.ts";
+  import { Component } from "../../core/Component";
+  import { AssetPreloader } from "../../core/AssetLoader";
   
   export class Balance extends Component {
     private textFrame: Graphics;

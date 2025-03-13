@@ -1,5 +1,5 @@
 import { BlurFilter, Container, Sprite } from "pixi.js";
-import { Component } from "../../../core/Component.ts";
+import { Component } from "../../../core/Component";
 import {
   REEL_WIDTH,
   REEL_GAP,
@@ -9,8 +9,8 @@ import {
   SYMBOL_SIZE,
   SYMBOL_TO_SHOW,
 } from "../../../lib/reelconfig.ts";
-import { ReelConfig, REELCONFIG } from "../../../lib/types.ts"; // Import both types
-import { AssetPreloader } from "../../../core/AssetLoader.ts";
+import { ReelConfig, REELCONFIG } from "../../../lib/types";
+import { AssetPreloader } from "../../../core/AssetLoader";
 
 export class ReelsContainer extends Component {
   private reels: REELCONFIG = []; // Array of ReelConfig objects

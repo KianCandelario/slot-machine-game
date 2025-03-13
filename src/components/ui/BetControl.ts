@@ -1,6 +1,6 @@
 import { Graphics, Text, TextStyle } from "pixi.js";
-import { Component } from "../../core/Component.ts";
-import { DecreaseButton, IncreaseButton } from "../../templates/UITemplate.ts";
+import { Component } from "../../core/Component";
+import { DecreaseButton, IncreaseButton } from "../../templates/UITemplate";
 
 export class BetControl extends Component{
     private betFrame: Graphics

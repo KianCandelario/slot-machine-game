@@ -1,5 +1,5 @@
 import { Assets, Sprite, Texture } from "pixi.js";
-import { Component } from "../../core/Component.ts";
+import { Component } from "../../core/Component";
 
 export class Logo extends Component {
   private logoShadowTexture!: Texture;

@@ -1,6 +1,6 @@
 import { Container, Sprite, Texture } from "pixi.js";
-import { AssetPreloader } from "../../core/AssetLoader.ts";
-import { Component } from "../../core/Component.ts";
+import { AssetPreloader } from "../../core/AssetLoader";
+import { Component } from "../../core/Component";
 
 class Petal extends Sprite {
     speed: number

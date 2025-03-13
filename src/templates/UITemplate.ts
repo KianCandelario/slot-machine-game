@@ -1,5 +1,5 @@
 import { Graphics, Text, TextStyle } from "pixi.js";
-import { Component } from "../core/Component.ts";
+import { Component } from "../core/Component";
 
 export class DecreaseButton extends Component {
   private decreaseButtonBG: Graphics;

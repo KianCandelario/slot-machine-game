@@ -1,12 +1,12 @@
 import { Application } from "pixi.js";
 import { initDevtools } from "@pixi/devtools";
-import { Background } from "../components/view/Background.ts";
-import { Logo } from "../components/view/Logo.ts";
-import { GameArea } from "../components/ui/containers/GameArea.ts"
-import { SpinButton } from "../components/ui/SpinButton.ts";
-import { Petals } from "../components/view/Petals.ts";
-import { Balance } from "../components/ui/Balance.ts";
-import { BetControl } from "../components/ui/BetControl.ts";
+import { Background } from "../components/view/Background";
+import { Logo } from "../components/view/Logo";
+import { GameArea } from "../components/ui/containers/GameArea"
+import { SpinButton } from "../components/ui/SpinButton";
+import { Petals } from "../components/view/Petals";
+import { Balance } from "../components/ui/Balance";
+import { BetControl } from "../components/ui/BetControl";
 
 export class Game {
     private app: Application;
@@ -68,6 +68,7 @@ export class Game {
             // Add the component's update method to the ticker
             this.app.ticker.add((ticker) => {
                 this.petalsComponent.update(ticker.deltaTime);
+                this.spinButton.update(ticker.deltaTime);
             });
 
             } catch (error) {
