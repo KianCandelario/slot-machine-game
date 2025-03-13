@@ -49,18 +49,17 @@ export class Game {
             await this.background.init();
             await this.logo.init();
             await this.gameArea.init();
-            await this.spinButton.init();
             await this.balance.init()
             await this.betControl.init()
-
+            await this.spinButton.init();
             // Add to the stage
             this.app.stage.addChild(this.background);
             this.app.stage.addChild(this.petalsComponent);
             this.app.stage.addChild(this.logo);
             this.app.stage.addChild(this.gameArea);
-            this.app.stage.addChild(this.spinButton);
             this.app.stage.addChild(this.balance);
             this.app.stage.addChild(this.betControl);
+            this.app.stage.addChild(this.spinButton);
             
 
             // Initialize the component

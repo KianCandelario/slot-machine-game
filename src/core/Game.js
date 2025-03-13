@@ -91,15 +91,13 @@ var Game = /** @class */ (function () {
                         return [4 /*yield*/, this.gameArea.init()];
                     case 5:
                         _a.sent();
-                        return [4 /*yield*/, this.spinButton.init()];
+                        return [4 /*yield*/, this.balance.init()];
                     case 6:
                         _a.sent();
-                        return [4 /*yield*/, this.balance.init()];
+                        return [4 /*yield*/, this.betControl.init()];
                     case 7:
                         _a.sent();
-                        return [4 /*yield*/, this.betControl.init()
-                            // Add to the stage
-                        ];
+                        return [4 /*yield*/, this.spinButton.init()];
                     case 8:
                         _a.sent();
                         // Add to the stage
@@ -107,9 +105,9 @@ var Game = /** @class */ (function () {
                         this.app.stage.addChild(this.petalsComponent);
                         this.app.stage.addChild(this.logo);
                         this.app.stage.addChild(this.gameArea);
-                        this.app.stage.addChild(this.spinButton);
                         this.app.stage.addChild(this.balance);
                         this.app.stage.addChild(this.betControl);
+                        this.app.stage.addChild(this.spinButton);
                         // Initialize the component
                         return [4 /*yield*/, this.petalsComponent.init()];
                     case 9:
