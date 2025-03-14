@@ -4,15 +4,19 @@ import {
     Text,
     TextStyle,
   } from "pixi.js";
-  import { Component } from "../../core/Component";
-  import { AssetPreloader } from "../../core/AssetLoader";
+import { Component } from "../../core/Component";
+import { AssetPreloader } from "../../core/AssetLoader";
+import { GameState } from "../../core/Game";
   
   export class Balance extends Component {
     private textFrame: Graphics;
     private textContainerMask: Graphics;
+    private money!: Text;
+    private gameState: GameState
   
-    constructor() {
+    constructor(gameState: GameState) {
       super();
+      this.gameState = gameState
   
       this.textFrame = new Graphics()
         .roundRect(0, 0, 250, 100, 25)
@@ -56,21 +60,27 @@ import {
         },
       });
   
-      let balance: { value: number } = { value: 1000 };
-  
-      let money = new Text({
-          text: balance.value.toString(), 
+      this.money = new Text({
+          text: this.gameState.balance.value.toString(), 
           style: style
       });
-      money.position.x += 105;
-      money.position.y += 32;
+      this.money.position.x += 105;
+      this.money.position.y += 32;
       
   
       // Add the money text to the display list
-      this.addChild(money);
+      this.addChild(this.money);
+    }
+
+    public updateBalance():void {
+      if (this.money) {
+        this.money.text = this.gameState.balance.value.toString()
+      }
     }
   
-    public update(): void {}
+    public update(): void {
+      this.updateBalance()
+    }
   
     protected recalculateLayout(width: number, height: number): void {
       this.position.set(window.innerWidth / 2 - 400, window.innerHeight - 130);

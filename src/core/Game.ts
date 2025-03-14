@@ -8,6 +8,13 @@ import { Petals } from "../components/view/Petals";
 import { Balance } from "../components/ui/Balance";
 import { BetControl } from "../components/ui/BetControl";
 
+
+export interface GameState {
+    balance: {value: number}
+    bet: {value: number}
+    running: boolean
+}
+
 export class Game {
     private app: Application;
     private background: Background;
@@ -18,6 +25,9 @@ export class Game {
     private balance: Balance;
     private betControl: BetControl;
 
+    public gameState: GameState;
+
+
     constructor() {
         this.app = new Application();
         this.background = new Background();
@@ -25,8 +35,15 @@ export class Game {
         this.logo = new Logo();
         this.gameArea = new GameArea();
         this.spinButton = new SpinButton();
-        this.balance = new Balance();
-        this.betControl = new BetControl()
+
+        this.gameState = {
+            balance: {value: 1000},
+            bet: {value: 5},
+            running: false
+        }
+
+        this.balance = new Balance(this.gameState);
+        this.betControl = new BetControl(this.gameState);
     }
 
     public async init(): Promise<void> {
@@ -52,7 +69,7 @@ export class Game {
             await this.balance.init()
             await this.betControl.init()
             await this.spinButton.init();
-            // Add to the stage
+            
             this.app.stage.addChild(this.background);
             this.app.stage.addChild(this.petalsComponent);
             this.app.stage.addChild(this.logo);
@@ -60,21 +77,38 @@ export class Game {
             this.app.stage.addChild(this.balance);
             this.app.stage.addChild(this.betControl);
             this.app.stage.addChild(this.spinButton);
-            
 
-            // Initialize the component
+            this.spinButton.on("pointerdown", this.handleSpin.bind(this))
+
+            
             await this.petalsComponent.init();
 
             // Add the component's update method to the ticker
             this.app.ticker.add((ticker) => {
                 this.petalsComponent.update(ticker.deltaTime);
+
                 this.spinButton.update(ticker.deltaTime);
+                this.balance.update();
+                this.betControl.update();
             });
 
             } catch (error) {
                 console.error("Failed to initialize components:", error);
             }
         }
+
+    
+        private handleSpin = (): void => {
+            if (this.gameState.balance.value >= this.gameState.bet.value) {
+                this.gameState.balance.value -= this.gameState.bet.value
+
+                this.balance.updateBalance()
+            }
+            else {
+                window.alert("You don't have enough balance to bet.")
+            }
+        }
+
 
     // Game loop update function
     private update = (delta: number): void => {};

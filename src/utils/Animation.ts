@@ -15,6 +15,8 @@ export class Pulsing {
 
     public start(): void {
         this.active = true;
+
+        
     }
 
     public stop(): void {
