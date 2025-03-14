@@ -2,21 +2,24 @@ import { Component } from "../../../core/Component";
 import { Graphics } from "pixi.js";
 import { TOTAL_REEL_WIDTH, TOTAL_REEL_HEIGHT } from "../../../lib/reelconfig";
 import { ReelsContainer } from "./ReelsContainer";
+import { GameState } from "../../../core/Game";
 
 export class ReelsViewport extends Component {
-  private reelsContainer: ReelsContainer; // Use camelCase for instance variables
+  private reelsContainer: ReelsContainer;
   private reelMask: Graphics;
+  private gameState: GameState;
 
-  constructor() {
+  constructor(gameState: GameState) {
     super();
+    this.gameState = gameState;
 
     // Create the mask for the reels area
     this.reelMask = new Graphics()
       .roundRect(0, 45, TOTAL_REEL_WIDTH, TOTAL_REEL_HEIGHT, 15)
       .fill(0xffffff);
 
-    // Create the reels container
-    this.reelsContainer = new ReelsContainer();
+    // Create the reels container with gameState
+    this.reelsContainer = new ReelsContainer(gameState);
   }
 
   public async init(): Promise<void> {
@@ -32,7 +35,11 @@ export class ReelsViewport extends Component {
     this.addChild(this.reelsContainer);
   }
 
+  public startSpin(): void {
+    this.reelsContainer.startSpin();
+  }
+
   public update(delta: number): void {
-    // Update logic for the reels viewport (if needed)
+    this.reelsContainer.update(delta);
   }
 }

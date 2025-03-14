@@ -4,14 +4,17 @@ import {
   TOTAL_REEL_HEIGHT,
   TOTAL_REEL_WIDTH,
 } from "../../../lib/reelconfig";
-import { ReelsViewport } from "./ReelsViewport"
+import { ReelsViewport } from "./ReelsViewport";
+import { GameState } from "../../../core/Game";
 
 export class GameArea extends Component {
   private frame: Graphics;
   private reelsViewport: ReelsViewport;
+  private gameState: GameState;
 
-  constructor() {
+  constructor(gameState: GameState) {
     super();
+    this.gameState = gameState;
 
     this.frame = new Graphics()
       .roundRect(0, 65, TOTAL_REEL_WIDTH + 20, TOTAL_REEL_HEIGHT + 20, 20)
@@ -22,26 +25,32 @@ export class GameArea extends Component {
         alignment: 1,
       });
 
-    this.reelsViewport = new ReelsViewport()
+    this.reelsViewport = new ReelsViewport(gameState);
   }
 
   public async init(): Promise<void> {
-    this.frame.alpha = 0.5
-    this.addChild(this.frame)
+    this.frame.alpha = 0.5;
+    this.addChild(this.frame);
+    
     // Initialize the ReelsViewport before adding it
     await this.reelsViewport.init();
     this.addChild(this.reelsViewport);
-    
 
     this.recalculateLayout(window.innerWidth, window.innerHeight);
   }
 
-  public update(): void {}
+  public startSpin(): void {
+    this.reelsViewport.startSpin();
+  }
+
+  public update(delta: number): void {
+    this.reelsViewport.update(delta);
+  }
 
   protected recalculateLayout(width: number, height: number): void {
     this.frame.position.set(
-      (window.innerWidth - TOTAL_REEL_WIDTH) / 2 - 40,
-      (window.innerHeight - TOTAL_REEL_HEIGHT) / 2
+      (width - TOTAL_REEL_WIDTH) / 2 - 40,
+      (height - TOTAL_REEL_HEIGHT) / 2
     );
 
     // Position the ReelsViewport relative to the frame
@@ -50,6 +59,4 @@ export class GameArea extends Component {
       this.frame.position.y + 10  // Adjust for padding
     );
   }
-
-  public destroy(): void {}
 }
