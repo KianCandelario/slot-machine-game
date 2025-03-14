@@ -95,9 +95,26 @@ export class BetControl extends Component{
         this.addChild(betAmountText)
         this.addChild(this.increaseButton)
         this.increaseButton.position.set(200, 60)
+
+        this.decreaseButton.on("pointerdown", this.buttonDown.bind(this.decreaseButton))
+        this.decreaseButton.on("pointerup", this.buttonUp.bind(this.decreaseButton))
+        this.decreaseButton.on("pointerupoutside", this.buttonUp.bind(this.decreaseButton))
+
+        this.increaseButton.on("pointerdown", this.buttonDown.bind(this.increaseButton))
+        this.increaseButton.on("pointerup", this.buttonUp.bind(this.increaseButton))
+        this.increaseButton.on("pointerupoutside", this.buttonUp.bind(this.increaseButton))
     }
 
     public update(): void {}
+
+
+    private buttonDown():void {
+        this.scale.set(.90)
+    }
+
+    private buttonUp():void {
+        this.scale.set(1)
+    }
 
     protected recalculateLayout(width: number, height: number): void {
         this.position.set(

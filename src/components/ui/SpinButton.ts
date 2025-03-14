@@ -24,7 +24,7 @@ export class SpinButton extends Component {
     
     this.addChild(this.buttonSprite);
     
-    // Initialize the pulsing animation
+    // Initialize the animations
     this.pulsingAnimation = new Pulsing(this.buttonSprite, 0.07, 0.05);
     
     // Start the pulsing animation
@@ -37,18 +37,13 @@ export class SpinButton extends Component {
   }
 
   private onButtonDown(): void {
-    // Temporarily stop pulsing and scale down for click effect
     this.pulsingAnimation.stop();
-    this.buttonSprite.scale.set(0.18, 0.18); // A bit smaller when clicked
+    this.scale.set(0.90)
   }
 
   private onButtonUp(): void {
-    // Reset scale and restart pulsing
-    this.buttonSprite.scale.set(0.20, 0.20);
     this.pulsingAnimation.start();
-    
-    // You can add your spin logic here
-    console.log("Spin button clicked!");
+    this.scale.set(1)
   }
 
   public update(deltaTime: number): void {
