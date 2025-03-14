@@ -1,6 +1,3 @@
-// Add these utility functions at the top of your ReelsContainer.ts file
-// or consider moving them to a separate utilities file
-
 // For smooth animations
 const tweening: {
   object: any;
