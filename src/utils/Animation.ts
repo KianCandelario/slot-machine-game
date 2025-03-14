@@ -43,11 +43,7 @@ export class Pulsing {
     }
 }
 
-export class Squish {
-    constructor() {
 
-    }
-}
 
 export class Rotate {
     constructor() {
