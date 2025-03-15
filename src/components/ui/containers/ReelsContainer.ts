@@ -1,52 +1,3 @@
-// For smooth animations
-const tweening: {
-  object: any;
-  property: string;
-  propertyBeginValue: number;
-  target: number;
-  easing: (t: number) => number;
-  time: number;
-  change?: (t: any) => void;
-  complete?: (t: any) => void;
-  start: number;
-}[] = [];
-
-function tweenTo(
-  object: any, 
-  property: string, 
-  target: number, 
-  time: number, 
-  easing: (t: number) => number, 
-  onchange?: (t: any) => void, 
-  oncomplete?: (t: any) => void
-) {
-  const tween = {
-      object,
-      property,
-      propertyBeginValue: object[property],
-      target,
-      easing,
-      time,
-      change: onchange,
-      complete: oncomplete,
-      start: Date.now(),
-  };
-
-  tweening.push(tween);
-  return tween;
-}
-
-// Linear interpolation function
-function lerp(a1: number, a2: number, t: number) {
-  return a1 * (1 - t) + a2 * t;
-}
-
-// Backout easing function for realistic slot machine deceleration
-function backout(amount: number) {
-  return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
-}
-
-
 import { BlurFilter, Container, Sprite } from "pixi.js";
 import { Component } from "../../../core/Component";
 import {
@@ -62,19 +13,19 @@ import { ReelConfig, REELCONFIG } from "../../../lib/types";
 import { AssetPreloader } from "../../../core/AssetLoader";
 import { GameState } from "../../../core/Game";
 import { SpinButton } from "../SpinButton.ts";
-
-// Add these utility functions at the top of your file or consider moving them to a separate utilities file
-// (tweening, lerp, and backout functions as shown above)
+import { Tweening } from "../../../utils/Animation.ts";
 
 export class ReelsContainer extends Component {
   private reels: REELCONFIG = []; // Array of ReelConfig objects
   private gameState: GameState;
   private spinButton: SpinButton;
+  private tweening_: Tweening;
 
   constructor(gameState: GameState) {
     super();
     this.gameState = gameState;
     this.spinButton = new SpinButton(this.gameState)
+    this.tweening_ = new Tweening()
   }
 
   public async init(): Promise<void> {
@@ -159,12 +110,12 @@ export class ReelsContainer extends Component {
       // Calculate time based on reel index for sequential stopping
       const time = 2500 + i * 600 + extra * 600;
       
-      tweenTo(
+      this.tweening_.tweenTo(
         r,
         'position',
         target,
         time,
-        backout(0.5),
+        this.tweening_.backout(0.5),
         undefined,
         i === this.reels.length - 1 ? () => {
           // All reels stopped
@@ -192,11 +143,11 @@ export class ReelsContainer extends Component {
     const now = Date.now();
     const remove = [];
 
-    for (let i = 0; i < tweening.length; i++) {
-      const t = tweening[i];
+    for (let i = 0; i < this.tweening_.tweening.length; i++) {
+      const t = this.tweening_.tweening[i];
       const phase = Math.min(1, (now - t.start) / t.time);
 
-      t.object[t.property] = lerp(t.propertyBeginValue, t.target, t.easing(phase));
+      t.object[t.property] = this.tweening_.lerp(t.propertyBeginValue, t.target, t.easing(phase));
       if (t.change) t.change(t);
       if (phase === 1) {
         t.object[t.property] = t.target;
@@ -206,7 +157,7 @@ export class ReelsContainer extends Component {
     }
     
     for (let i = 0; i < remove.length; i++) {
-      tweening.splice(tweening.indexOf(remove[i]), 1);
+      this.tweening_.tweening.splice(this.tweening_.tweening.indexOf(remove[i]), 1);
     }
     
     // Update the slots

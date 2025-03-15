@@ -14,7 +14,7 @@ export class Pulsing {
         this.originalScale = { x: target.scale.x, y: target.scale.y };
         this.pulseFactor = pulseFactor;
         this.pulseSpeed = pulseSpeed;
-        this.gameState = gameState
+        this.gameState = gameState;
     }
 
     public start(): void {
@@ -67,5 +67,56 @@ export class Rotate {
             this.target.rotation -= (this.rotationSpeed+0.13) * time
         }
         this.target.rotation -= this.rotationSpeed * time
+    }
+}
+
+
+export class Tweening {
+    // For smooth animations
+    public tweening: {
+        object: any;
+        property: string;
+        propertyBeginValue: number;
+        target: number;
+        easing: (t: number) => number;
+        time: number;
+        change?: (t: any) => void;
+        complete?: (t: any) => void;
+        start: number;
+    }[] = [];
+
+    public  tweenTo(
+    object: any, 
+    property: string, 
+    target: number, 
+    time: number, 
+    easing: (t: number) => number, 
+    onchange?: (t: any) => void, 
+    oncomplete?: (t: any) => void
+    ) {
+        const tween = {
+            object,
+            property,
+            propertyBeginValue: object[property],
+            target,
+            easing,
+            time,
+            change: onchange,
+            complete: oncomplete,
+            start: Date.now(),
+        };
+
+        this.tweening.push(tween);
+        return tween;
+    }
+
+    // Linear interpolation function
+    public lerp(a1: number, a2: number, t: number) {
+        return a1 * (1 - t) + a2 * t;
+    }
+
+    // Backout easing function for realistic slot machine deceleration
+    public backout(amount: number) {
+        return (t: number) => --t * t * ((amount + 1) * t + amount) + 1;
     }
 }
