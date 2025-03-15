@@ -10,11 +10,10 @@ import { GameState } from "../../../core/Game";
 export class GameArea extends Component {
   private frame: Graphics;
   private reelsViewport: ReelsViewport;
-  private gameState: GameState;
 
   constructor(gameState: GameState) {
     super();
-    this.gameState = gameState;
+    
 
     this.frame = new Graphics()
       .roundRect(0, 65, TOTAL_REEL_WIDTH + 20, TOTAL_REEL_HEIGHT + 20, 20)

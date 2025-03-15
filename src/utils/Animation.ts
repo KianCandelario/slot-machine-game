@@ -7,14 +7,12 @@ export class Pulsing {
     private pulseSpeed: number;
     private time: number = 0;
     private active: boolean = false;
-    private gameState: GameState;
 
     constructor(gameState: GameState, target: any, pulseFactor: number = 0.1, pulseSpeed: number = 0.05) {
         this.target = target;
         this.originalScale = { x: target.scale.x, y: target.scale.y };
         this.pulseFactor = pulseFactor;
         this.pulseSpeed = pulseSpeed;
-        this.gameState = gameState;
     }
 
     public start(): void {

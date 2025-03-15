@@ -12,19 +12,16 @@ import {
 import { ReelConfig, REELCONFIG } from "../../../lib/types";
 import { AssetPreloader } from "../../../core/AssetLoader";
 import { GameState } from "../../../core/Game";
-import { SpinButton } from "../SpinButton.ts";
 import { Tweening } from "../../../utils/Animation.ts";
 
 export class ReelsContainer extends Component {
   private reels: REELCONFIG = []; // Array of ReelConfig objects
   private gameState: GameState;
-  private spinButton: SpinButton;
   private tweening_: Tweening;
 
   constructor(gameState: GameState) {
     super();
     this.gameState = gameState;
-    this.spinButton = new SpinButton(this.gameState)
     this.tweening_ = new Tweening()
   }
 

@@ -36,7 +36,7 @@ export class SpinButton extends Component {
     // Start the pulsing animation
     this.pulsingAnimation.start();
     
-    // Add pointer interactions if needed
+    // Add pointer interactions
     this.on('pointerdown', this.onButtonDown.bind(this));
     this.on('pointerup', this.onButtonUp.bind(this));
     this.on('pointerupoutside', this.onButtonUp.bind(this));

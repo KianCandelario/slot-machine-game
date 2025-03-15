@@ -7,11 +7,9 @@ import { GameState } from "../../../core/Game";
 export class ReelsViewport extends Component {
   private reelsContainer: ReelsContainer;
   private reelMask: Graphics;
-  private gameState: GameState;
 
   constructor(gameState: GameState) {
     super();
-    this.gameState = gameState;
 
     // Create the mask for the reels area
     this.reelMask = new Graphics()
