@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "repository": {
     "type": "git",
@@ -23,6 +26,8 @@
   },
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
+    "@pixi/filter-drop-shadow": "^5.2.0",
+    "@pixi/ui": "^2.2.2",
     "pixi.js": "^8.8.1",
     "typescript": "^5.8.2"
   }
