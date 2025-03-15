@@ -1,14 +1,19 @@
 import { Sprite } from "pixi.js";
 import { AssetPreloader } from "../../core/AssetLoader";
 import { Component } from "../../core/Component";
-import { Pulsing } from "../../utils/Animation";
+import { Pulsing, Rotate } from "../../utils/Animation";
+import { GameState } from "../../core/Game";
 
 export class SpinButton extends Component {
   private buttonSprite!: Sprite;
   private pulsingAnimation!: Pulsing;
+  private rotatingAnim!: Rotate;
+  private gameState: GameState
 
-  constructor() {
+  constructor(gameState: GameState) {
     super();
+
+    this.gameState = gameState
   }
 
   public async init(): Promise<void> {
@@ -25,7 +30,8 @@ export class SpinButton extends Component {
     this.addChild(this.buttonSprite);
     
     // Initialize the animations
-    this.pulsingAnimation = new Pulsing(this.buttonSprite, 0.07, 0.05);
+    this.pulsingAnimation = new Pulsing(this.gameState, this.buttonSprite, 0.07, 0.05);
+    this.rotatingAnim = new Rotate(this.gameState, this.buttonSprite, 0.01)
     
     // Start the pulsing animation
     this.pulsingAnimation.start();
@@ -49,6 +55,7 @@ export class SpinButton extends Component {
   public update(deltaTime: number): void {
     // Update the pulsing animation
     this.pulsingAnimation.update(deltaTime);
+    this.rotatingAnim.update(deltaTime)
   }
 
   protected recalculateLayout(width: number, height: number): void {

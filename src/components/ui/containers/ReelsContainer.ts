@@ -61,6 +61,7 @@ import {
 import { ReelConfig, REELCONFIG } from "../../../lib/types";
 import { AssetPreloader } from "../../../core/AssetLoader";
 import { GameState } from "../../../core/Game";
+import { SpinButton } from "../SpinButton.ts";
 
 // Add these utility functions at the top of your file or consider moving them to a separate utilities file
 // (tweening, lerp, and backout functions as shown above)
@@ -68,10 +69,12 @@ import { GameState } from "../../../core/Game";
 export class ReelsContainer extends Component {
   private reels: REELCONFIG = []; // Array of ReelConfig objects
   private gameState: GameState;
+  private spinButton: SpinButton;
 
   constructor(gameState: GameState) {
     super();
     this.gameState = gameState;
+    this.spinButton = new SpinButton(this.gameState)
   }
 
   public async init(): Promise<void> {
@@ -137,6 +140,7 @@ export class ReelsContainer extends Component {
     
     this.gameState.running = true;
     
+    
     // Make all symbols visible before spinning
     for (const reel of this.reels) {
       for (const symbol of reel.symbols) {
@@ -177,7 +181,6 @@ export class ReelsContainer extends Component {
             }
           }
           
-          // Here you might want to check for wins before allowing another spin
           // this.checkWins();
         } : undefined
       );

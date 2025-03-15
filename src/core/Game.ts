@@ -40,7 +40,7 @@ export class Game {
 
     // Initialize components with gameState
     this.gameArea = new GameArea(this.gameState);
-    this.spinButton = new SpinButton();
+    this.spinButton = new SpinButton(this.gameState);
     this.balance = new Balance(this.gameState);
     this.betControl = new BetControl(this.gameState);
   }

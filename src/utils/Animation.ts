@@ -1,3 +1,5 @@
+import { GameState } from "../core/Game";
+
 export class Pulsing {
     private target: any;
     private originalScale: { x: number; y: number };
@@ -5,17 +7,19 @@ export class Pulsing {
     private pulseSpeed: number;
     private time: number = 0;
     private active: boolean = false;
+    private gameState: GameState;
 
-    constructor(target: any, pulseFactor: number = 0.1, pulseSpeed: number = 0.05) {
+    constructor(gameState: GameState, target: any, pulseFactor: number = 0.1, pulseSpeed: number = 0.05) {
         this.target = target;
         this.originalScale = { x: target.scale.x, y: target.scale.y };
         this.pulseFactor = pulseFactor;
         this.pulseSpeed = pulseSpeed;
+        this.gameState = gameState
     }
 
     public start(): void {
         this.active = true;
-
+        
         
     }
 
@@ -48,7 +52,20 @@ export class Pulsing {
 
 
 export class Rotate {
-    constructor() {
+    private target: any
+    private rotationSpeed: number
+    private gameState: GameState
 
+    constructor(gameState: GameState, target: any, rotationSpeed: number) {
+        this.target = target
+        this.rotationSpeed = rotationSpeed
+        this.gameState = gameState
+    }
+
+    public update(time: number): void {
+        if (this.gameState.running) {
+            this.target.rotation -= (this.rotationSpeed+0.13) * time
+        }
+        this.target.rotation -= this.rotationSpeed * time
     }
 }
