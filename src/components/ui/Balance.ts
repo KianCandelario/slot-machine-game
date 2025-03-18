@@ -37,7 +37,7 @@ export class Balance extends Component {
   
   public async init(): Promise<void> {
     this.textFrame.alpha = 0.5;
-    const coinTexture = await AssetPreloader.loadCoinTexture();
+    const coinTexture = AssetPreloader.getCoinTexture();
     const coinIcon = new Sprite(coinTexture);
   
     coinIcon.scale.set(0.13);

@@ -22,7 +22,7 @@ export class SpinButton extends Component {
     this.zIndex = 20;
     this.interactive = true;
 
-    const spinButtonTexture = await AssetPreloader.loadButtonTexture();
+    const spinButtonTexture = AssetPreloader.getButtonTexture();
     this.buttonSprite = new Sprite(spinButtonTexture);
     this.buttonSprite.anchor.set(0.5);
     this.buttonSprite.scale.set(this.baseButtonScale);

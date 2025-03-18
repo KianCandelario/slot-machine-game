@@ -71,7 +71,7 @@ export class Petals extends Component {
     }
 
     public async init(): Promise<void> {
-        const petalTexture = await AssetPreloader.loadPetalTexture();
+        const petalTexture = AssetPreloader.getPetalTexture();
         
         // Spawn Petals
         this.petals = Array.from({ length: this.PETAL_COUNT }, () => {

@@ -27,7 +27,7 @@ export class ReelsContainer extends Component {
 
   public async init(): Promise<void> {
     // Load textures using the AssetPreloader
-    await AssetPreloader.loadTextures();
+    await AssetPreloader.loadAllAssets();
     const slotTextures = AssetPreloader.getTextures();
 
     // Set the position of the reels container
