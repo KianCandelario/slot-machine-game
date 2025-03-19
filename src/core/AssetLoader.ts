@@ -59,7 +59,7 @@ export class AssetPreloader {
             this.app.screen.width / 2 - 200,
             this.app.screen.height / 2,
             400,
-            30,
+            20,
             15
         );
         progressBarBg.endFill();
@@ -72,7 +72,7 @@ export class AssetPreloader {
             this.app.screen.width / 2 - 200,
             this.app.screen.height / 2,
             0, // Initial width is 0
-            30,
+            20,
             15
         );
         this.progressBar.endFill();
@@ -103,7 +103,7 @@ export class AssetPreloader {
             this.app.screen.width / 2 - 200,
             this.app.screen.height / 2,
             width,
-            30,
+            20,
             15
         );
         this.progressBar.endFill();
