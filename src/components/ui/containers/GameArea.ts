@@ -70,7 +70,7 @@ export class GameArea extends Component {
     this.scale_ = Math.min(horizontalScale, verticalScale);
     
     // Apply minimum and maximum scaling constraints
-    this.scale_ = Math.max(0.5, Math.min(this.scale_, 1.5));
+    this.scale_ = Math.max(0.5, Math.min(this.scale_, 1.3));
     
     // Round to 2 decimal places for cleaner scaling
     this.scale_ = Math.floor(this.scale_ * 100) / 100;
