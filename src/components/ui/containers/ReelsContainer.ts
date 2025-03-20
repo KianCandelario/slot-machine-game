@@ -12,67 +12,67 @@ import {
 import { ReelConfig, REELCONFIG } from "../../../lib/types";
 import { AssetPreloader } from "../../../core/AssetLoader";
 import { GameState } from "../../../core/Game";
-import { Tweening } from "../../../utils/Animation";
+import gsap from "gsap";
 
 export class ReelsContainer extends Component {
-  private reels: REELCONFIG = []; // Array of ReelConfig objects
+  private reels: REELCONFIG = [];
   private gameState: GameState;
-  private tweening_: Tweening;
+  
+  // predefined symbols for each reel
   private reelSet: string[][] = [
     [ "hv2", "lv3", "lv3", "hv1", "hv1", "lv1", "hv1", "hv4", "lv1", "hv3", "hv2", "hv3", "lv4", "hv4", "lv1", "hv2", "lv4", "lv1", "lv3", "hv2" ],
-    [ "hv1", "lv2", "lv3", "lv2", "lv1", "lv1", "lv4", "lv1", "lv1", "hv4",  "lv3", "hv2", "lv1", "lv3", "hv1", "lv1", "lv2", "lv4", "lv3", "lv2" ],
-    [ "lv1", "hv2", "lv3", "lv4", "hv3", "hv2", "lv2", "hv2", "hv2", "lv1", "hv3", "lv1", "hv1", "lv2", "hv3",  "hv2", "hv4", "hv1",  "lv2", "lv4" ],
+    [ "hv1", "lv2", "lv3", "lv2", "lv1", "lv1", "lv4", "lv1", "lv1", "hv4", "lv3", "hv2", "lv1", "lv3", "hv1", "lv1", "lv2", "lv4", "lv3", "lv2" ],
+    [ "lv1", "hv2", "lv3", "lv4", "hv3", "hv2", "lv2", "hv2", "hv2", "lv1", "hv3", "lv1", "hv1", "lv2", "hv3", "hv2", "hv4", "hv1", "lv2", "lv4" ],
     [ "hv2", "lv2", "hv3", "lv2", "lv4", "lv4", "hv3", "lv2", "lv4", "hv1", "lv1", "hv1", "lv2", "hv3", "lv2", "lv3", "hv2", "lv1", "hv3", "lv2" ],
-    [ "lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2",  "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4" ],
+    [ "lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2", "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4" ],
   ];
-  private reelPositions: number[] = [];
-  private screen: string[][] = [
-    [], 
-    [], 
-    []
-  ];
-  private symbolCodeMap = new Map<Sprite, string>();
+  
+  private reelPositions: number[] = [];         // current position index for each reel
+  private targetReelPositions: number[] = [];   // target position indices for each reel (predefined outcome)
+  private screen: string[][] = [[], [], []];    // visible symbols to the screen
+  private symbolCodeMap = new Map<Sprite, string>();    // map to track which symbol sprite corresponds to which symbol code
+  private textureMap = new Map<string, Texture>();      // map of symbol codes to textures
 
+  
   constructor(gameState: GameState) {
     super();
     this.gameState = gameState;
-    this.tweening_ = new Tweening();
   }
 
   public async init(): Promise<void> {
-    // Load textures using the AssetPreloader
     await AssetPreloader.loadAllAssets();
     const slotTextures = AssetPreloader.getTextures();
 
-    // Create a mapping between symbol codes and textures
-    const textureMap = new Map<string, Texture>();
-    // Assuming first 4 textures are mask (high value)
-    textureMap.set("hv1", slotTextures[0]); // mask1
-    textureMap.set("hv2", slotTextures[1]); // mask2
-    textureMap.set("hv3", slotTextures[2]); // mask3
-    textureMap.set("hv4", slotTextures[3]); // mask4
-    // bonus and wild are special symbols
-    textureMap.set("lv1", slotTextures[6]); // 9
-    textureMap.set("lv2", slotTextures[7]); // 10
-    textureMap.set("lv3", slotTextures[8]); // A
-    textureMap.set("lv4", slotTextures[9]); // J
+    // mapping between symbol codes and textures
+    // high value symbols (masks)
+    this.textureMap.set("hv1", slotTextures[0]); // mask1 (red angry man)
+    this.textureMap.set("hv2", slotTextures[1]); // mask2 (white wolf)
+    this.textureMap.set("hv3", slotTextures[2]); // mask3 (red angry demon)
+    this.textureMap.set("hv4", slotTextures[3]); // mask4 (kinda cute looking face)
 
-    // Set the position of the reels container
+    // low value symbols (card values)
+    this.textureMap.set("lv1", slotTextures[6]); // 9
+    this.textureMap.set("lv2", slotTextures[7]); // 10
+    this.textureMap.set("lv3", slotTextures[8]); // A
+    this.textureMap.set("lv4", slotTextures[9]); // j
+
+    // position the reels container
     this.position.set(10, 90);
 
-    // Initialize reel positions with random values
-    for (let i = 0; i < NUM_REEL; i++) {
-      this.reelPositions.push(this.randomInt(0, this.reelSet[i].length - 1));
-    }
+    // initialize reel positions
+    this.setInitialState();
+    
+    // initialize target positions - determined before spin
+    this.targetReelPositions = [...this.reelPositions];
 
-    // Create the reels
+    // Create all reels
     for (let i = 0; i < NUM_REEL; i++) {
       // Create a container for this reel
       const reelContainer = new Container();
-      reelContainer.position.set(i * (REEL_WIDTH + REEL_GAP), 0);
+      reelContainer.position.set(i * (REEL_WIDTH + REEL_GAP), 5);
       this.addChild(reelContainer);
 
-      // Create the reel object to track its properties
+      // Create the reel configuration object
       const reel: ReelConfig = {
         container: reelContainer,
         symbols: [],
@@ -81,44 +81,39 @@ export class ReelsContainer extends Component {
         blur: new BlurFilter(),
       };
 
-      // No blur by default
+      // Set up blur filter (initially disabled)
       reel.blur.strengthX = 0;
       reel.blur.strengthY = 0;
       reelContainer.filters = [reel.blur];
 
-      // Create the symbols for the reel based on the reel set
+      // Create the symbols for the reel
       for (let j = 0; j < NUM_SYMBOLS; j++) {
         // Get the symbol from the reel set based on initial position
         const symbolIdx = (this.reelPositions[i] + j) % this.reelSet[i].length;
         const symbolCode = this.reelSet[i][symbolIdx];
-        const symbolTexture = textureMap.get(symbolCode) || slotTextures[0]; // Fallback to first texture
+        const symbolTexture = this.textureMap.get(symbolCode) || slotTextures[0]; // Fallback to first texture
 
+        // Create a new sprite with the symbol texture
         const symbol = new Sprite(symbolTexture);
         this.symbolCodeMap.set(symbol, symbolCode);
 
-        // Center the anchor point so scaling works from the center
+        // Scale the symbol to fit within the designated space
         symbol.anchor.set(0.5);
-
-        // Scale to fit within the symbol area while maintaining aspect ratio
         const maxWidth = SYMBOL_SIZE;
         const maxHeight = SYMBOL_SIZE;
-
-        // Calculate scale to fit within our boundaries
         const scaleX = maxWidth / symbol.width;
         const scaleY = maxHeight / symbol.height;
         const scale = Math.min(scaleX, scaleY);
-
-        // Apply uniform scaling
         symbol.scale.set(scale);
 
-        // Position in the center of the symbol area
+        // Position the symbol in the center of its area
         symbol.x = REEL_WIDTH / 2;
         symbol.y = j * (SYMBOL_SIZE + SYMBOL_GAP) + SYMBOL_SIZE / 2;
 
-        // Hide symbols that are outside the visible area
+        // Only show symbols that are within the visible area
         symbol.visible = j < SYMBOL_TO_SHOW;
 
-        // Add directly to the reel container
+        // Add to the reel container
         reelContainer.addChild(symbol);
         reel.symbols.push(symbol);
       }
@@ -126,16 +121,30 @@ export class ReelsContainer extends Component {
       this.reels.push(reel);
     }
 
-    // Initialize the screen array
+    // Initialize the screen array with current symbols
     this.updateScreenArray();
   }
 
-  // Helper method to generate random integer
-  private randomInt(from: number, to: number): number {
-    return Math.floor(Math.random() * (to - from + 1) + from);
+  // set initial state for all reels
+  private setInitialState(): void {
+    this.reelPositions = [];
+    for (let i = 0; i < NUM_REEL; i++) {
+      this.reelPositions.push(0);
+    }
   }
 
-  // Method to update the screen array based on current reel positions
+  // generate a new random outcome for the next spin
+  private generateRandomOutcome(): number[] {
+    const newPositions = [];
+    for (let i = 0; i < NUM_REEL; i++) {
+      // generate random position for each reel
+      const randomPos = Math.floor(Math.random() * this.reelSet[i].length);
+      newPositions.push(randomPos);
+    }
+    return newPositions;
+  }
+
+  // update the screen array based on current reel positions
   private updateScreenArray(): void {
     this.screen = [[], [], []];
 
@@ -147,11 +156,11 @@ export class ReelsContainer extends Component {
       }
     }
 
-    // You can log the screen for debugging
+    // display current screen for debugging
     this.displayScreen(this.screen);
   }
 
-  // helper method for debugging
+  // helper to display the current screen in console
   private displayScreen(screen: string[][]): void {
     console.log("Current Screen:");
     for (let row = 0; row < screen.length; row++) {
@@ -159,205 +168,175 @@ export class ReelsContainer extends Component {
     }
   }
 
+  // predetermined outcome for the next spin
+  public setPredeterminedOutcome(positions: number[]): void {
+    // store the target positions that will be reached when spinning ends
+    this.targetReelPositions = [...positions];
+  }
+
+
   public startSpin(): void {
-    if (this.gameState.running) return; // If already spinning, do nothing
+    if (this.gameState.running) return; // if already spinning, do nothing
 
     this.gameState.running = true;
 
-    // Make all symbols visible before spinning
+    // Make all symbols visible before spinning starts
     for (const reel of this.reels) {
       for (const symbol of reel.symbols) {
         symbol.visible = true;
       }
     }
 
-    // Generate new random positions for each reel
-    this.reelPositions = [];
-    for (let i = 0; i < NUM_REEL; i++) {
-      this.reelPositions.push(this.randomInt(0, this.reelSet[i].length - 1));
-    }
+    // Generate a new random outcome for this spin
+    this.targetReelPositions = this.generateRandomOutcome();
 
-    // Start spinning animation for each reel with proper delays
+    // Start the spin animation for each reel with sequential delays
     for (let i = 0; i < this.reels.length; i++) {
-      const r = this.reels[i];
+      const reel = this.reels[i];
+      
+      // Apply blur effect during spinning
+      gsap.to(reel.blur, { 
+        strengthY: 17, 
+        duration: 0.5 
+      });
 
-      // Calculate a new target position that will end with the symbol
-      // from reelPositions showing at the top of the visible area
-      const extra = Math.floor(Math.random() * 3);
-      const target = r.position + 7 + i * 5 + extra;
+      // calculate final position
+      const spinAmount = 5 + i; // base number of complete rotations (more for later reels)
+      const totalSymbols = this.reelSet[i].length;
+      
+      // target position = current position + full rotations + extra to reach target
+      let targetPosition = reel.position + (spinAmount * totalSymbols);
+      
+      // Calculate additional offset to reach the target position
+      const currentIndex = this.reelPositions[i];
+      const targetIndex = this.targetReelPositions[i];
+      const offset = (targetIndex - currentIndex + totalSymbols) % totalSymbols;
+      targetPosition += offset;
 
-      // Calculate time based on reel index for sequential stopping
-      const time = 3500 + i * 600 + extra * 600;
-
-      this.tweening_.tweenTo(
-        r,
-        "position",
-        target,
-        time,
-        this.tweening_.backout(0.5),
-        undefined,
-        i === this.reels.length - 1
-          ? () => {
-              // All reels stopped
-              this.gameState.running = false;
-
-              // Update the screen array with the new positions
-              this.updateScreenArray();
-
-              // Update visible symbols based on our reel set
-              this.updateVisibleSymbols();
-
-              // this.checkWins();
-            }
-          : undefined
-      );
+      // GSAP animation
+      gsap.to(reel, {
+        position: targetPosition,
+        duration: 2 + i * 0.5, // sequential timing: first reel stops first
+        ease: "power3.inOut",
+        onUpdate: () => {
+          // will be handled in the main update method
+        },
+        onComplete: () => {
+          // remove blur when the reel stops
+          gsap.to(reel.blur, { 
+            strengthY: 0, 
+            duration: 0.2 
+          });
+          
+          // update the position to match the target
+          this.reelPositions[i] = this.targetReelPositions[i];
+          
+          // if this is the last reel, update the game state
+          if (i === this.reels.length - 1) {
+            this.gameState.running = false;
+            
+            // update the screen array and show final symbols
+            this.updateScreenArray();
+            this.updateVisibleSymbols();
+          }
+        }
+      });
     }
   }
 
-  // Method to update visible symbols based on reel positions
+
+
+  // update the visible symbols based on final reel positions
   private updateVisibleSymbols(): void {
-    const textureMap = new Map<string, Texture>();
-    const slotTextures = AssetPreloader.getTextures();
-
-    // Set up the texture map
-    textureMap.set("hv1", slotTextures[0]);
-    textureMap.set("hv2", slotTextures[1]);
-    textureMap.set("hv3", slotTextures[2]);
-    textureMap.set("hv4", slotTextures[3]);
-    textureMap.set("lv1", slotTextures[6]);
-    textureMap.set("lv2", slotTextures[7]);
-    textureMap.set("lv3", slotTextures[8]);
-    textureMap.set("lv4", slotTextures[9]);
-
     for (let i = 0; i < this.reels.length; i++) {
       const reel = this.reels[i];
 
-      // Update the first SYMBOL_TO_SHOW (3) symbols of each reel
-      // to show the correct symbols based on the screen array
+      // update the visible symbols (top 3) to match the screen array
       for (let j = 0; j < SYMBOL_TO_SHOW; j++) {
         const symbol = reel.symbols[j];
         const symbolCode = this.screen[j][i];
-        const symbolTexture = textureMap.get(symbolCode) || slotTextures[0];
+        const symbolTexture = this.textureMap.get(symbolCode) || AssetPreloader.getTextures()[0];
 
+        // update the texture
         symbol.texture = symbolTexture;
         this.symbolCodeMap.set(symbol, symbolCode);
 
-        // Calculate scale to fit within our boundaries while maintaining aspect ratio
+        // recalculate scale to maintain proper sizing
         const maxWidth = SYMBOL_SIZE;
         const maxHeight = SYMBOL_SIZE;
         const scaleX = maxWidth / symbol.texture.width;
         const scaleY = maxHeight / symbol.texture.height;
         const scale = Math.min(scaleX, scaleY);
-
-        // Apply uniform scaling
         symbol.scale.set(scale);
 
-        // Position in the center of the symbol area
+        // position in the center of the symbol area
         symbol.x = REEL_WIDTH / 2;
         symbol.y = j * (SYMBOL_SIZE + SYMBOL_GAP) + SYMBOL_SIZE / 2;
 
         symbol.visible = true;
       }
 
-      // Hide symbols outside the visible area
+      // hide symbols outside the visible area
       for (let j = SYMBOL_TO_SHOW; j < reel.symbols.length; j++) {
         reel.symbols[j].visible = false;
       }
     }
   }
 
+
+
+  // game loop update method
   public update(delta: number): void {
-    // Process all active tweens
-    const now = Date.now();
-    const remove = [];
-
-    for (let i = 0; i < this.tweening_.tweening.length; i++) {
-      const t = this.tweening_.tweening[i];
-      const phase = Math.min(1, (now - t.start) / t.time);
-
-      t.object[t.property] = this.tweening_.lerp(
-        t.propertyBeginValue,
-        t.target,
-        t.easing(phase)
-      );
-      if (t.change) t.change(t);
-      if (phase === 1) {
-        t.object[t.property] = t.target;
-        if (t.complete) t.complete(t);
-        remove.push(t);
-      }
-    }
-
-    for (let i = 0; i < remove.length; i++) {
-      this.tweening_.tweening.splice(
-        this.tweening_.tweening.indexOf(remove[i]),
-        1
-      );
-    }
-
-    // Update the slots
-    const slotTextures = AssetPreloader.getTextures();
-    const textureMap = new Map<string, Texture>();
-
-    // Set up the texture map
-    textureMap.set("hv1", slotTextures[0]);
-    textureMap.set("hv2", slotTextures[1]);
-    textureMap.set("hv3", slotTextures[2]);
-    textureMap.set("hv4", slotTextures[3]);
-    textureMap.set("lv1", slotTextures[6]);
-    textureMap.set("lv2", slotTextures[7]);
-    textureMap.set("lv3", slotTextures[8]);
-    textureMap.set("lv4", slotTextures[9]);
-
+    // skip updates if not running
+    if (!this.gameState.running) return;
+    
     for (let i = 0; i < this.reels.length; i++) {
-      const r = this.reels[i];
+      const reel = this.reels[i];
 
-      // Skip update if the reel position hasn't changed
-      if (r.position === r.prevPosition) continue;
+      // skip update if the reel position hasn't changed
+      if (reel.position === reel.prevPosition) continue;
 
-      // Update blur filter based on speed
-      const speed = Math.abs(r.position - r.prevPosition);
-      r.blur.strengthY = speed * 100;
-      r.prevPosition = r.position;
+      // update previous position
+      reel.prevPosition = reel.position;
 
-      // Total height of a single symbol slot (including gap)
+      // total height of a single symbol slot (including gap)
       const slotHeight = SYMBOL_SIZE + SYMBOL_GAP;
 
-      // Update symbol positions
-      for (let j = 0; j < r.symbols.length; j++) {
-        const symbol = r.symbols[j];
+      // update symbol positions
+      for (let j = 0; j < reel.symbols.length; j++) {
+        const symbol = reel.symbols[j];
         const prevY = symbol.y;
 
-        // Move symbol based on reel position
-        symbol.y = ((r.position + j) % r.symbols.length) * slotHeight;
+        // calculate new Y position based on reel position
+        symbol.y = ((reel.position + j) % reel.symbols.length) * slotHeight+50;
 
-        // Control visibility during spinning - only show symbols in the visible area
-        if (this.gameState.running) {
-          symbol.visible =
-            symbol.y >= 0 && symbol.y < SYMBOL_TO_SHOW * slotHeight;
-        }
+        // control visibility - only show symbols in the visible area
+        symbol.visible = symbol.y >= 0 && symbol.y < SYMBOL_TO_SHOW * slotHeight;
 
-        // If symbol moves below visible area, recycle it to the top with new texture
-        if (symbol.y < 0 && prevY > slotHeight) {
-          // Get a new symbol from the reel set based on the current position
+        // if symbol moves out of view at the bottom and was previously visible, recycle it to the top with the next texture in sequence
+        if (symbol.y < 0 && prevY > 0) {
+          // calculate which symbol should be shown
           const reelIndex = i;
-          const symbolIndex =
-            (this.reelPositions[reelIndex] + j) %
-            this.reelSet[reelIndex].length;
+          const totalSymbols = this.reelSet[reelIndex].length;
+          
+          // get position in the reel from the total reel position
+          const reelPosition = Math.floor(reel.position) % totalSymbols;
+          
+          // calculate which symbol index this would be
+          const symbolIndex = (reelPosition + j) % totalSymbols;
           const symbolCode = this.reelSet[reelIndex][symbolIndex];
-          const symbolTexture = textureMap.get(symbolCode) || slotTextures[0];
+          const symbolTexture = this.textureMap.get(symbolCode) || AssetPreloader.getTextures()[0];
 
+          // update the symbol
           symbol.texture = symbolTexture;
           this.symbolCodeMap.set(symbol, symbolCode);
 
-          // Calculate scale to fit within our boundaries while maintaining aspect ratio
+          // recalculate scale to maintain proper sizing
           const maxWidth = SYMBOL_SIZE;
           const maxHeight = SYMBOL_SIZE;
           const scaleX = maxWidth / symbol.texture.width;
           const scaleY = maxHeight / symbol.texture.height;
           const scale = Math.min(scaleX, scaleY);
-
-          // Apply uniform scaling
           symbol.scale.set(scale);
         }
       }
