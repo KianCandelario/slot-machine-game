@@ -4,6 +4,7 @@ export abstract class Component extends Container {
   constructor() {
     super();
 
+		this.pivot.set(0.5);
     // Bind the resize handler to the class instance
     this.onResize = this.onResize.bind(this);
 

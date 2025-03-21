@@ -7,6 +7,7 @@ import { SpinButton } from "../components/ui/SpinButton";
 import { Petals } from "../components/view/Petals";
 import { Balance } from "../components/ui/Balance";
 import { BetControl } from "../components/ui/BetControl";
+import { AssetPreloader } from "./AssetLoader";
 
 export interface GameState {
   balance: { value: number };
@@ -62,6 +63,7 @@ export class Game {
 
     // Initialize the components
     try {
+      await AssetPreloader.init(this.app)
       await this.background.init();
       await this.logo.init();
       await this.gameArea.init();
