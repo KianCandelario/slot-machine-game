@@ -27,12 +27,12 @@ export class ReelsContainer extends Component {
           [ "lv3", "lv4", "hv2", "hv3", "hv4", "hv1", "hv3", "hv2", "hv2", "hv4", "hv4", "hv2", "lv2", "hv4", "hv1", "lv2", "hv1", "lv2", "hv4", "lv4" ],
      ];
 
-     private reelPositions: number[] = []; // current position index for each reel
-     private targetReelPositions: number[] = []; // target position indices for each reel (predefined outcome)
-     private finalScreen: string[][] = [[], [], []]; // final symbols to show on the screen
-     private symbolCodeMap = new Map<Sprite, string>(); // map to track which symbol sprite corresponds to which symbol code
-     private textureMap = new Map<string, Texture>(); // map of symbol codes to textures
-     private symbolsInitialized = false; // Flag to track if symbols have been initialized with final results
+     private reelPositions: number[] = [];                // current position index for each reel
+     private targetReelPositions: number[] = [];          // target position indices for each reel (predefined outcome)
+     private finalScreen: string[][] = [[], [], []];      // final symbols to show on the screen
+     private symbolCodeMap = new Map<Sprite, string>();   // map to track which symbol sprite corresponds to which symbol code
+     private textureMap = new Map<string, Texture>();     // map of symbol codes to textures
+     private symbolsInitialized = false;                  // Flag to track if symbols have been initialized with final results
 
      constructor(gameState: GameState) {
           super();
@@ -45,16 +45,16 @@ export class ReelsContainer extends Component {
 
           // mapping between symbol codes and textures
           // high value symbols (masks)
-          this.textureMap.set("hv1", slotTextures[0]); // mask1 (red angry man)
-          this.textureMap.set("hv2", slotTextures[1]); // mask2 (white wolf)
-          this.textureMap.set("hv3", slotTextures[2]); // mask3 (red angry demon)
-          this.textureMap.set("hv4", slotTextures[3]); // mask4 (kinda cute looking face)
+          this.textureMap.set("hv1", slotTextures[0]);   // mask1 (red angry man)
+          this.textureMap.set("hv2", slotTextures[1]);   // mask2 (white wolf)
+          this.textureMap.set("hv3", slotTextures[2]);   // mask3 (red angry demon)
+          this.textureMap.set("hv4", slotTextures[3]);   // mask4 (kinda cute looking face)
 
           // low value symbols (card values)
-          this.textureMap.set("lv1", slotTextures[6]); // 9
-          this.textureMap.set("lv2", slotTextures[7]); // 10
-          this.textureMap.set("lv3", slotTextures[8]); // A
-          this.textureMap.set("lv4", slotTextures[9]); // j
+          this.textureMap.set("lv1", slotTextures[6]);   // 9
+          this.textureMap.set("lv2", slotTextures[7]);   // 10
+          this.textureMap.set("lv3", slotTextures[8]);   // A
+          this.textureMap.set("lv4", slotTextures[9]);   // j
 
           // position the reels container
           this.position.set(10, 90);
