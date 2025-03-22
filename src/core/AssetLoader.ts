@@ -19,23 +19,90 @@ export class AssetPreloader {
     private static progressBar: Graphics;
     private static progressText: Text;
     private static loadingContainer: Container;
+    private static titleText: Text;
+    private static progressBarBg: Graphics;
 
     constructor() {
         
     }
     
-    
     public static async init(app: Application): Promise<void> {
         this.app = app;
 
-
-        this.logo = new Logo()
-        await this.logo.init()
+        this.logo = new Logo();
+        await this.logo.init();
         
-
         this.setupLoadingScreen();
+        
+        // add window resize event listener
+        window.addEventListener('resize', this.handleResize.bind(this));
+        
         await this.loadAllAssets();
         this.hideLoadingScreen();
+        
+        // remove event listener when loading is complete
+        window.removeEventListener('resize', this.handleResize.bind(this));
+    }
+    
+    private static handleResize(): void {
+        // update app renderer size to match the new window dimensions
+        this.app.renderer.resize(window.innerWidth, window.innerHeight);
+        
+        // reposition all elements based on new screen dimensions
+        this.repositionElements();
+    }
+    
+    private static repositionElements(): void {
+        // update background size
+        const background = this.loadingContainer.getChildAt(0) as Graphics;
+        background.clear();
+        background.beginFill(0x022c3c, 0.7);
+        background.rect(0, 0, this.app.screen.width, this.app.screen.height);
+        background.endFill();
+        
+        // reposition title text
+        this.titleText.x = this.app.screen.width / 2;
+        this.titleText.y = this.app.screen.height / 2 + this.getResponsiveValue(105);
+        
+        // adjust text size based on screen width
+        this.titleText.style.fontSize = this.getResponsiveValue(30);
+        this.progressText.style.fontSize = this.getResponsiveValue(24);
+        
+        // reposition and rescale progress bar background
+        const progressBarWidth = this.getResponsiveValue(400);
+        const progressBarHeight = this.getResponsiveValue(20);
+        const progressBarRadius = this.getResponsiveValue(15);
+        
+        this.progressBarBg.clear();
+        this.progressBarBg.beginFill(0x333333);
+        this.progressBarBg.roundRect(
+            this.app.screen.width / 2 - progressBarWidth / 2,
+            this.app.screen.height / 2 + this.getResponsiveValue(155),
+            progressBarWidth,
+            progressBarHeight,
+            progressBarRadius
+        );
+        this.progressBarBg.endFill();
+        
+        // reposition and rescale progress bar (keep the same progress percentage)
+        const currentProgress = parseInt(this.progressText.text) / 100;
+        this.updateProgress(currentProgress);
+        
+        // reposition progress text
+        this.progressText.x = this.app.screen.width / 2;
+        this.progressText.y = this.app.screen.height / 2 + this.getResponsiveValue(215);
+        
+        // trigger the recalculateLayout method
+        if (this.logo && typeof this.logo['recalculateLayout'] === 'function') {
+            this.logo['recalculateLayout'](this.app.screen.width);
+        }
+    }
+    
+    // helper method to calculate responsive values based on screen size
+    private static getResponsiveValue(baseValue: number): number {
+        const baseWidth = 1920; // reference width
+        const scaleFactor = Math.min(this.app.screen.width / baseWidth, 1);
+        return Math.max(baseValue * scaleFactor, baseValue * 0.5); // ensure minimum size
     }
     
     private static setupLoadingScreen(): void {
@@ -50,43 +117,53 @@ export class AssetPreloader {
         background.endFill();
         this.loadingContainer.addChild(background);
         
+        // adds top margin to the logo
+        this.logo.position._y = 70
+        // add logo to the container
+        this.loadingContainer.addChild(this.logo);
+        
         // create title text
-        const titleText = new Text({
+        this.titleText = new Text({
             text: "Loading...",
             style: {
                 fontFamily: "Arial",
-                fontSize: 30,
+                fontSize: this.getResponsiveValue(30),
                 fill: 0xffffff,
                 align: "center"
-                }
-            });
-        titleText.anchor.set(0.5);
-        titleText.x = this.app.screen.width / 2;
-        titleText.y = this.app.screen.height / 2 + 105;
-        this.loadingContainer.addChild(titleText);
+            }
+        });
+        this.titleText.anchor.set(0.5);
+        this.titleText.x = this.app.screen.width / 2;
+        this.titleText.y = this.app.screen.height / 2 + this.getResponsiveValue(105);
+        this.loadingContainer.addChild(this.titleText);
+        
+        // calculate responsive dimensions for progress bar
+        const progressBarWidth = this.getResponsiveValue(400);
+        const progressBarHeight = this.getResponsiveValue(20);
+        const progressBarRadius = this.getResponsiveValue(15);
         
         // create progress bar background
-        const progressBarBg = new Graphics();
-        progressBarBg.beginFill(0x333333);
-        progressBarBg.roundRect(
-            this.app.screen.width / 2 - 200,
-            this.app.screen.height / 2 + 155,
-            400,
-            20,
-            15
+        this.progressBarBg = new Graphics();
+        this.progressBarBg.beginFill(0x333333);
+        this.progressBarBg.roundRect(
+            this.app.screen.width / 2 - progressBarWidth / 2,
+            this.app.screen.height / 2 + this.getResponsiveValue(155),
+            progressBarWidth,
+            progressBarHeight,
+            progressBarRadius
         );
-        progressBarBg.endFill();
-        this.loadingContainer.addChild(progressBarBg);
+        this.progressBarBg.endFill();
+        this.loadingContainer.addChild(this.progressBarBg);
         
         // create progress bar
         this.progressBar = new Graphics();
         this.progressBar.beginFill(0xdf535c);
         this.progressBar.roundRect(
-            this.app.screen.width / 2 - 200,
-            this.app.screen.height / 2 + 155,
+            this.app.screen.width / 2 - progressBarWidth / 2,
+            this.app.screen.height / 2 + this.getResponsiveValue(155),
             0, // initial width is 0
-            20,
-            15
+            progressBarHeight,
+            progressBarRadius
         );
         this.progressBar.endFill();
         this.loadingContainer.addChild(this.progressBar);
@@ -96,35 +173,33 @@ export class AssetPreloader {
             text: "0%",
             style: {
                 fontFamily: "Arial",
-                fontSize: 24,
+                fontSize: this.getResponsiveValue(24),
                 fill: 0xffffff,
                 align: "center"
             }
         });
         this.progressText.anchor.set(0.5);
         this.progressText.x = this.app.screen.width / 2;
-        this.progressText.y = this.app.screen.height / 2 + 215;
+        this.progressText.y = this.app.screen.height / 2 + this.getResponsiveValue(215);
         this.loadingContainer.addChild(this.progressText);
-
-        const logoContainer = new Container()
-        logoContainer.addChild(this.logo)
-        
-        logoContainer.position._y=150
-
-        this.loadingContainer.addChild(logoContainer)
     }
     
     private static updateProgress(progress: number): void {
+        // calculate responsive dimensions
+        const progressBarWidth = this.getResponsiveValue(400);
+        const progressBarHeight = this.getResponsiveValue(20);
+        const progressBarRadius = this.getResponsiveValue(15);
+        
         // update progress bar width
-        const width = Math.floor(400 * progress);
+        const width = Math.floor(progressBarWidth * progress);
         this.progressBar.clear();
         this.progressBar.beginFill(0xdf535c);
         this.progressBar.roundRect(
-            this.app.screen.width / 2 - 200,
-            this.app.screen.height / 2 + 155,
+            this.app.screen.width / 2 - progressBarWidth / 2,
+            this.app.screen.height / 2 + this.getResponsiveValue(155),
             width,
-            20,
-            15
+            progressBarHeight,
+            progressBarRadius
         );
         this.progressBar.endFill();
         
@@ -140,8 +215,6 @@ export class AssetPreloader {
     }
     
     public static async loadAllAssets(): Promise<void> {
-        
-        
         // register all assets
         const texturePaths = [
             "../assets/japanese_theme/slot_symbols/masks/mask1.png",
