@@ -44,6 +44,7 @@ export class GameArea extends Component {
     window.addEventListener('resize', () => {
       this.recalculateLayout(window.innerWidth, window.innerHeight);
     });
+
   }
 
   public startSpin(): void {

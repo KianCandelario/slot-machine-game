@@ -3,7 +3,7 @@ import { Component } from "../../core/Component";
 import { DecreaseButton, IncreaseButton } from "../../templates/UITemplate";
 import { GameState } from "../../core/Game";
 
-export class BetControl extends Component{
+export class BetControl extends Component {
     private betFrame: Graphics;
     private betMask: Graphics;
     private betTextStyle: TextStyle;
@@ -63,7 +63,7 @@ export class BetControl extends Component{
         this.increaseButton = new IncreaseButton("+");
     }
 
-    public async init(): Promise<void>{
+    public async init(): Promise<void> {
         await this.decreaseButton.init();
         await this.increaseButton.init();
 
@@ -103,24 +103,18 @@ export class BetControl extends Component{
         this.increaseButton.on("pointerup", this.buttonUp.bind(this.increaseButton));
         this.increaseButton.on("pointerupoutside", this.buttonUp.bind(this.increaseButton));
         
-        // Initial layout calculation
-        this.recalculateLayout(window.innerWidth, window.innerHeight);
-        
-        // Add window resize event listener
-        window.addEventListener('resize', () => {
-          this.recalculateLayout(window.innerWidth, window.innerHeight);
-        });
+        this.onResize();
     }
 
     public update(): void {
         this.updateBet();
     }
 
-    private buttonDown():void {
+    private buttonDown(): void {
         this.scale.set(.90);
     }
 
-    private buttonUp():void {
+    private buttonUp(): void {
         this.scale.set(1);
     }
 
@@ -145,24 +139,23 @@ export class BetControl extends Component{
     }
 
     protected recalculateLayout(width: number, height: number): void {
-        // Calculate appropriate scale based on screen size
+        // calculate appropriate scale based on screen size
         const referenceWidth = 1920; 
         const referenceHeight = 980; 
         
-        // Calculate scale based on how much the actual screen differs from reference
+        // calculate scale based on how much the actual screen differs from reference
         const widthRatio = width / referenceWidth;
         const heightRatio = height / referenceHeight;
         
-        // Use the smaller ratio to ensure everything fits
+        // use the smaller ratio to ensure everything fits
         this.scale_ = Math.min(widthRatio, heightRatio);
         
-        // Limit scaling to reasonable bounds
+        // limit scaling to reasonable bounds
         this.scale_ = Math.max(0.7, Math.min(this.scale_, 1.5));
         
-        // Apply the scaling
         this.scale.set(this.scale_);
         
-        // Position at 65% from left edge, 85% from top edge
+        // position at 65% from left edge, 85% from top edge
         this.position.set(
           width * 0.65 - (this.baseWidth * this.scale_ / 2),
           height * 0.85

@@ -68,16 +68,17 @@ export class Balance extends Component {
     this.money.position.x += 105;
     this.money.position.y += 32;
     
-    // Add the money text to the display list
+    // add the money text to the display list
     this.addChild(this.money);
     
-    // Initial layout calculation
+    // initial layout calculation
     this.recalculateLayout(window.innerWidth, window.innerHeight);
     
-    // Add window resize event listener
+    // add window resize event listener
     window.addEventListener('resize', () => {
       this.recalculateLayout(window.innerWidth, window.innerHeight);
     });
+
   }
 
   public updateBalance():void {
@@ -91,25 +92,24 @@ export class Balance extends Component {
   }
   
   protected recalculateLayout(width: number, height: number): void {
-    // Calculate appropriate scale based on screen size
+    // calculate appropriate scale based on screen size
     const referenceWidth = 1920; 
     const referenceHeight = 980; 
     
-    // Calculate scale based on how much the actual screen differs from reference
+    // calculate scale based on how much the actual screen differs from reference
     const widthRatio = width / referenceWidth;
     const heightRatio = height / referenceHeight;
     
-    // Use the smaller ratio to ensure everything fits
+    // use the smaller ratio to ensure everything fits
     this.scale_ = Math.min(widthRatio, heightRatio);
     
-    // Limit scaling to reasonable bounds
+    // limit scaling to reasonable bounds
     this.scale_ = Math.max(0.7, Math.min(this.scale_, 1.5));
     
-    // Apply the scaling
+    // apply the scaling
     this.scale.set(this.scale_);
     
-    // Position relative to screen width/height percentages
-    // Position at 34% from left edge, 85% from top edge
+    // position at 34% from left edge, 85% from top edge
     this.position.set(
       width * 0.34 - (this.baseWidth * this.scale_ / 2),
       height * 0.85
