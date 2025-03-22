@@ -36,15 +36,8 @@ export class GameArea extends Component {
     // Initialize the ReelsViewport before adding it
     await this.reelsViewport.init();
     this.addChild(this.reelsViewport);
-
-    // Initial layout calculation
-    this.recalculateLayout(window.innerWidth, window.innerHeight);
     
-    // Add window resize event listener
-    window.addEventListener('resize', () => {
-      this.recalculateLayout(window.innerWidth, window.innerHeight);
-    });
-
+    this.onResize()
   }
 
   public startSpin(): void {

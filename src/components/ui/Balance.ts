@@ -71,14 +71,7 @@ export class Balance extends Component {
     // add the money text to the display list
     this.addChild(this.money);
     
-    // initial layout calculation
-    this.recalculateLayout(window.innerWidth, window.innerHeight);
-    
-    // add window resize event listener
-    window.addEventListener('resize', () => {
-      this.recalculateLayout(window.innerWidth, window.innerHeight);
-    });
-
+    this.onResize()
   }
 
   public updateBalance():void {

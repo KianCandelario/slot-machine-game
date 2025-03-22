@@ -102,8 +102,8 @@ export class BetControl extends Component {
         this.increaseButton.on("pointerdown", this.increaseBet.bind(this));
         this.increaseButton.on("pointerup", this.buttonUp.bind(this.increaseButton));
         this.increaseButton.on("pointerupoutside", this.buttonUp.bind(this.increaseButton));
-        
-        this.onResize();
+
+        this.onResize()
     }
 
     public update(): void {
