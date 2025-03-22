@@ -17,6 +17,7 @@ export class Logo extends Component {
   // ensure it doesn't get too small or too large
   private minWidth: number = 200;
   private maxWidth: number = 600;
+    anchor: any;
 
   constructor() {
     super();
