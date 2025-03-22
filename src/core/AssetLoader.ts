@@ -6,38 +6,51 @@ import {
     Text, 
     Texture 
 } from "pixi.js";
+import { Logo } from "../components/view/Logo";
 
 export class AssetPreloader {
     private static textures: Texture[] = [];
     private static buttonTexture: Texture;
     private static petalTexture: Texture;
     private static coinTexture: Texture;
+    private static logo: Logo;
     
     private static app: Application;
     private static progressBar: Graphics;
     private static progressText: Text;
     private static loadingContainer: Container;
+
+    constructor() {
+        
+    }
+    
     
     public static async init(app: Application): Promise<void> {
         this.app = app;
+
+
+        this.logo = new Logo()
+        await this.logo.init()
+        
+
         this.setupLoadingScreen();
         await this.loadAllAssets();
         this.hideLoadingScreen();
     }
     
     private static setupLoadingScreen(): void {
-        // Create container for loading elements
+        // create container for loading elements
         this.loadingContainer = new Container();
         this.app.stage.addChild(this.loadingContainer);
-        
-        // Create background
+
+        // create background
         const background = new Graphics();
         background.beginFill(0x022c3c, 0.7);
         background.rect(0, 0, this.app.screen.width, this.app.screen.height);
         background.endFill();
         this.loadingContainer.addChild(background);
         
-        // Create title text
+        // create title text
         const titleText = new Text({
             text: "Loading...",
             style: {
@@ -49,15 +62,15 @@ export class AssetPreloader {
             });
         titleText.anchor.set(0.5);
         titleText.x = this.app.screen.width / 2;
-        titleText.y = this.app.screen.height / 2 - 50;
+        titleText.y = this.app.screen.height / 2 + 105;
         this.loadingContainer.addChild(titleText);
         
-        // Create progress bar background
+        // create progress bar background
         const progressBarBg = new Graphics();
         progressBarBg.beginFill(0x333333);
         progressBarBg.roundRect(
             this.app.screen.width / 2 - 200,
-            this.app.screen.height / 2,
+            this.app.screen.height / 2 + 155,
             400,
             20,
             15
@@ -65,20 +78,20 @@ export class AssetPreloader {
         progressBarBg.endFill();
         this.loadingContainer.addChild(progressBarBg);
         
-        // Create progress bar
+        // create progress bar
         this.progressBar = new Graphics();
         this.progressBar.beginFill(0xdf535c);
         this.progressBar.roundRect(
             this.app.screen.width / 2 - 200,
-            this.app.screen.height / 2,
-            0, // Initial width is 0
+            this.app.screen.height / 2 + 155,
+            0, // initial width is 0
             20,
             15
         );
         this.progressBar.endFill();
         this.loadingContainer.addChild(this.progressBar);
         
-        // Create progress text
+        // create progress text
         this.progressText = new Text({
             text: "0%",
             style: {
@@ -90,25 +103,32 @@ export class AssetPreloader {
         });
         this.progressText.anchor.set(0.5);
         this.progressText.x = this.app.screen.width / 2;
-        this.progressText.y = this.app.screen.height / 2 + 60;
+        this.progressText.y = this.app.screen.height / 2 + 215;
         this.loadingContainer.addChild(this.progressText);
+
+        const logoContainer = new Container()
+        logoContainer.addChild(this.logo)
+        
+        logoContainer.position._y=150
+
+        this.loadingContainer.addChild(logoContainer)
     }
     
     private static updateProgress(progress: number): void {
-        // Update progress bar width
+        // update progress bar width
         const width = Math.floor(400 * progress);
         this.progressBar.clear();
         this.progressBar.beginFill(0xdf535c);
         this.progressBar.roundRect(
             this.app.screen.width / 2 - 200,
-            this.app.screen.height / 2,
+            this.app.screen.height / 2 + 155,
             width,
             20,
             15
         );
         this.progressBar.endFill();
         
-        // Update progress text
+        // update progress text
         const percentage = Math.floor(progress * 100);
         this.progressText.text = `${percentage}%`;
     }
@@ -122,7 +142,7 @@ export class AssetPreloader {
     public static async loadAllAssets(): Promise<void> {
         
         
-        // Register all assets
+        // register all assets
         const texturePaths = [
             "../assets/japanese_theme/slot_symbols/masks/mask1.png",
             "../assets/japanese_theme/slot_symbols/masks/mask2.png",
@@ -145,18 +165,18 @@ export class AssetPreloader {
         
         // type the bundle object with an index signature
         Assets.addBundle(bundleId, texturePaths.reduce<Record<string, string>>((bundle, path) => {
-            // Extract the filename from the path as the asset name
+            // extract the filename from the path as the asset name
             const name = path.split('/').pop()!.split('.')[0];
             bundle[name] = path;
             return bundle;
         }, {}));
         
-        // Load all assets at once with progress tracking
+        // load all assets at once with progress tracking
         const bundle = await Assets.loadBundle(bundleId, (progress) => {
             this.updateProgress(progress);
         });
         
-        // Store textures for later use
+        // store textures for later use
         this.textures = [
             bundle["mask1"],
             bundle["mask2"],
