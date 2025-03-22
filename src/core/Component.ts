@@ -15,8 +15,10 @@ export abstract class Component extends Container {
   public abstract update(delta: number): void;
 
   protected onResize(): void {
+    const width = window.innerWidth
+    const height = window.innerHeight
     // recalculate positions, sizes, or scales based on the new window dimensions
-    this.recalculateLayout(window.innerWidth, window.innerHeight);
+    this.recalculateLayout(width, height);
   }
 
   protected recalculateLayout(width: number, height: number): void {
