@@ -11,6 +11,7 @@ export class SpinButton extends Component {
   private gameState: GameState;
   private scale_: number = 1;
   private baseButtonScale: number = 0.23;
+  private spinSoundFX: HTMLAudioElement | null = null;
 
   constructor(gameState: GameState) {
     super();
@@ -29,6 +30,13 @@ export class SpinButton extends Component {
     
     this.addChild(this.buttonSprite);
     
+    // get the spin sound effect
+    this.spinSoundFX = AssetPreloader.getSpinSoundFX();
+    if (this.spinSoundFX) {
+      this.spinSoundFX.volume = 0.5;
+      this.spinSoundFX.playbackRate = 1.8;
+    }
+    
     // initialize the animations
     this.pulsingAnimation = new Pulsing(this.gameState, this.buttonSprite, 0.07, 0.05);
     this.rotatingAnim = new Rotate(this.gameState, this.buttonSprite, 0.01);
@@ -40,6 +48,7 @@ export class SpinButton extends Component {
     this.on('pointerdown', this.onButtonDown.bind(this));
     this.on('pointerup', this.onButtonUp.bind(this));
     this.on('pointerupoutside', this.onButtonUp.bind(this));
+    this.on('pointertap', this.onButtonTap.bind(this)); // Add tap/click handler
     
     // initial layout calculation
     this.recalculateLayout(window.innerWidth, window.innerHeight);
@@ -48,7 +57,6 @@ export class SpinButton extends Component {
     window.addEventListener('resize', () => {
       this.recalculateLayout(window.innerWidth, window.innerHeight);
     });
-
   }
 
   private onButtonDown(): void {
@@ -60,6 +68,14 @@ export class SpinButton extends Component {
   private onButtonUp(): void {
     this.pulsingAnimation.start();
     this.scale.set(this.scale_);
+  }
+
+  private onButtonTap(): void {
+    // Play the spin sound effect when button is clicked
+    if (this.spinSoundFX) {
+      this.spinSoundFX.currentTime = 0; // Rewind to start if already playing
+      this.spinSoundFX.play().catch(e => console.log("Audio play failed:", e));
+    }
   }
 
   public update(deltaTime: number): void {

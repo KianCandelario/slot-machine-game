@@ -22,6 +22,10 @@ export class AssetPreloader {
     private static titleText: Text;
     private static progressBarBg: Graphics;
 
+    private static backgroundMusic: HTMLAudioElement | null = null;
+    private static spinSoundFX: HTMLAudioElement | null = null;
+    
+
     constructor() {
         
     }
@@ -233,16 +237,28 @@ export class AssetPreloader {
             "../assets/japanese_theme/others/petals.png",
             "../assets/japanese_theme/others/coin-icon.png"
         ];
+
+        const audioPaths = [
+            "../../public/assets/japanese_theme/media/bg-music(jap).mp3", 
+            "../../public/assets/japanese_theme/media/spin_soundfx.mp3"
+        ];
         
         const bundleId = "gameAssets";
         
         // type the bundle object with an index signature
-        Assets.addBundle(bundleId, texturePaths.reduce<Record<string, string>>((bundle, path) => {
-            // extract the filename from the path as the asset name
-            const name = path.split('/').pop()!.split('.')[0];
-            bundle[name] = path;
-            return bundle;
-        }, {}));
+        Assets.addBundle(bundleId, {
+            ...texturePaths.reduce<Record<string, string>>((bundle, path) => {
+                const name = path.split('/').pop()!.split('.')[0];
+                bundle[name] = path;
+                return bundle;
+            }, {}),
+            
+            ...audioPaths.reduce<Record<string, string>>((bundle, path) => {
+                const name = path.split('/').pop()!.split('.')[0];
+                bundle[name] = path;
+                return bundle;
+            }, {})
+        });
         
         // load all assets at once with progress tracking
         const bundle = await Assets.loadBundle(bundleId, (progress) => {
@@ -268,6 +284,11 @@ export class AssetPreloader {
         this.buttonTexture = bundle["button"];
         this.petalTexture = bundle["petals"];
         this.coinTexture = bundle["coin-icon"];
+
+        this.backgroundMusic = new Audio("../public/assets/japanese_theme/media/background-music.mp3");
+        this.spinSoundFX = new Audio("../public/assets/japanese_theme/media/spin_soundfx.mp3")
+        this.backgroundMusic.preload = "auto";
+        this.backgroundMusic.preload = "auto";
     }
     
     public static getTextures(): Texture[] {
@@ -284,5 +305,13 @@ export class AssetPreloader {
     
     public static getCoinTexture(): Texture {
         return this.coinTexture;
+    }
+
+    public static getBackgroundMusic(): HTMLAudioElement | null {
+        return this.backgroundMusic;
+    }
+
+    public static getSpinSoundFX(): HTMLAudioElement | null {
+        return this.spinSoundFX;
     }
 }
