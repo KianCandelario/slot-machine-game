@@ -9,10 +9,19 @@ import { Balance } from "../components/ui/Balance";
 import { BetControl } from "../components/ui/BetControl";
 import { AssetPreloader } from "./AssetLoader";
 
+type SymbolId = 'hv1' | 'hv2' | 'hv3' | 'hv4' | 'lv1' | 'lv2' | 'lv3' | 'lv4';
+
 export interface GameState {
   balance: { value: number };
   bet: { value: number };
   running: boolean;
+  lastWinAmount: number;
+  winningPaylines: {
+    payline: number;
+    symbol: SymbolId;
+    count: number;
+    payout: number;
+  }[];
 }
 
 export class Game {
@@ -37,7 +46,9 @@ export class Game {
     this.gameState = {
       balance: { value: 1000 },
       bet: { value: 5 },
-      running: false
+      running: false,
+      lastWinAmount: 0,
+      winningPaylines: []
     };
 
     // initialize components with gameState
