@@ -285,10 +285,10 @@ export class AssetPreloader {
         this.petalTexture = bundle["petals"];
         this.coinTexture = bundle["coin-icon"];
 
-        this.backgroundMusic = new Audio("../public/assets/japanese_theme/media/background-music.mp3");
-        this.spinSoundFX = new Audio("../public/assets/japanese_theme/media/spin_soundfx.mp3")
+        this.backgroundMusic = new Audio("../assets/japanese_theme/media/background-music.mp3");
+        this.spinSoundFX = new Audio("../assets/japanese_theme/media/spin_soundfx.mp3")
         this.backgroundMusic.preload = "auto";
-        this.backgroundMusic.preload = "auto";
+        this.spinSoundFX.preload = "auto";
     }
     
     public static getTextures(): Texture[] {
