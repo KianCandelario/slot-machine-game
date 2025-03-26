@@ -2,7 +2,7 @@ import { Application } from "pixi.js";
 import { initDevtools } from "@pixi/devtools";
 import { Background } from "../components/view/Background";
 import { Logo } from "../components/view/Logo";
-import { GameArea } from "../components/ui/containers/GameArea";
+import { GameArea } from "../components/ui/game_area/GameArea";
 import { SpinButton } from "../components/ui/SpinButton";
 import { Petals } from "../components/view/Petals";
 import { Balance } from "../components/ui/Balance";
