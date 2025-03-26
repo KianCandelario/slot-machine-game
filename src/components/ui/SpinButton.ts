@@ -73,7 +73,6 @@ export class SpinButton extends Component {
   private onButtonTap(): void {
     // Play the spin sound effect when button is clicked
     if (this.spinSoundFX) {
-      this.spinSoundFX.currentTime = 0; // Rewind to start if already playing
       this.spinSoundFX.play().catch(e => console.log("Audio play failed:", e));
     }
   }
