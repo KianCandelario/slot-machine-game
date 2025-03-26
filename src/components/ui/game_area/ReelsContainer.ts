@@ -1,5 +1,5 @@
 import { BlurFilter, Container, Sprite, Texture } from "pixi.js";
-import { Component } from "../../../core/Component";
+import { Component } from "../../../core/Component.ts";
 import {
      REEL_WIDTH,
      REEL_GAP,
@@ -9,9 +9,9 @@ import {
      SYMBOL_SIZE,
      SYMBOL_TO_SHOW,
 } from "../../../lib/reelconfig.ts";
-import { ReelConfig, REELCONFIG } from "../../../lib/types";
-import { AssetPreloader } from "../../../core/AssetLoader";
-import { GameState } from "../../../core/Game";
+import { ReelConfig, REELCONFIG } from "../../../lib/types.ts";
+import { AssetPreloader } from "../../../core/AssetLoader.ts";
+import { GameState } from "../../../core/Game.ts";
 import gsap from "gsap";
 
 type SymbolId = 'hv1' | 'hv2' | 'hv3' | 'hv4' | 'lv1' | 'lv2' | 'lv3' | 'lv4';
