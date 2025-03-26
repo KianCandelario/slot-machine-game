@@ -29,6 +29,7 @@
     "@pixi/filter-drop-shadow": "^5.2.0",
     "@pixi/ui": "^2.2.2",
     "gsap": "^3.12.7",
+    "pixi-filters": "^6.1.2",
     "pixi.js": "^8.8.1",
     "typescript": "^5.8.2"
   }
