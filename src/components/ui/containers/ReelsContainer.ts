@@ -14,6 +14,38 @@ import { AssetPreloader } from "../../../core/AssetLoader";
 import { GameState } from "../../../core/Game";
 import gsap from "gsap";
 
+type SymbolId = 'hv1' | 'hv2' | 'hv3' | 'hv4' | 'lv1' | 'lv2' | 'lv3' | 'lv4';
+
+const PAYTABLE: Record<SymbolId, [number, number, number]> = {
+    "hv1": [10, 20, 50],
+    "hv2": [5, 10, 20],
+    "hv3": [5, 10, 15],
+    "hv4": [5, 10, 15],
+    "lv1": [2, 5, 10],
+    "lv2": [1, 2, 5],
+    "lv3": [1, 2, 3],
+    "lv4": [1, 2, 3]
+};
+
+const PAYLINES: number[][][] = [
+    // Payline 1: Middle row straight across
+    [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]],
+    // Payline 2: Top row straight across
+    [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]],
+    // Payline 3: Bottom row straight across
+    [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]],
+    // Payline 4: V shape starting top-left
+    [[0, 0], [0, 1], [1, 2], [2, 3], [2, 4]],
+    // Payline 5: V shape starting bottom-left
+    [[2, 0], [2, 1], [1, 2], [0, 3], [0, 4]],
+    // Payline 6: X shape
+    [[0, 0], [1, 1], [2, 2], [1, 3], [0, 4]],
+    // Payline 7: Reverse X shape
+    [[2, 0], [1, 1], [0, 2], [1, 3], [2, 4]]
+];
+
+
+
 export class ReelsContainer extends Component {
      private reels: REELCONFIG = [];
      private gameState: GameState;
@@ -188,6 +220,103 @@ export class ReelsContainer extends Component {
           this.symbolsInitialized = true;
      }
 
+     private checkPayline(screen: SymbolId[][], payline: number[][]): {symbol: SymbolId, count: number} | null {
+          let matchingSymbol: SymbolId | null = null;
+          let count = 0;
+      
+          for (const [row, col] of payline) {
+              let currentSymbol = screen[row][col];
+      
+              if (matchingSymbol === null) {
+                  matchingSymbol = currentSymbol;
+                  count = 1;
+              }
+              else if (currentSymbol === matchingSymbol) {
+                  count++;
+              }
+              else {
+                  break;
+              }
+          }
+      
+          return count >= 3 ? { symbol: matchingSymbol!, count } : null;
+      }
+      
+      private calculateWins(): { 
+          total: number, 
+          wins: { 
+              payline: number, symbol: SymbolId, count: number, payout: number 
+          }[] 
+      } {
+          const screen = this.finalScreen as SymbolId[][];
+          const wins: { 
+              payline: number, 
+              symbol: SymbolId, 
+              count: number, 
+              payout: number 
+          }[] = [];
+          let total = 0;
+      
+          // check each payline
+          for (let i = 0; i < PAYLINES.length; i++) {
+              const payline = PAYLINES[i];
+              const result = this.checkPayline(screen, payline);
+      
+              if (result !== null) {
+                  const { symbol, count } = result;
+      
+                  // determine which payout to use (3, 4, or 5 of a kind)
+                  let payout = 0;
+                  if (count === 5) {
+                      payout = PAYTABLE[symbol][2];
+                  } else if (count === 4) {
+                      payout = PAYTABLE[symbol][1];
+                  } else {
+                      payout = PAYTABLE[symbol][0];
+                  }
+      
+                  wins.push({
+                      payline: i + 1, // paylines are 1-indexed
+                      symbol,
+                      count: count,
+                      payout
+                  });
+      
+                  total += payout;
+              }
+          }
+      
+          return { total, wins };
+      }
+      
+      // This method should be called when the spin completes
+      private handleSpinComplete(): void {
+          this.gameState.running = false;
+          this.symbolsInitialized = false; // Reset for next spin
+          
+          // Calculate wins
+          const { total, wins } = this.calculateWins();
+          
+          if (wins.length > 0) {
+              console.log(`Total win: ${total}`);
+              console.log("Winning paylines:");
+              wins.forEach(win => {
+                  console.log(`Payline ${win.payline}: ${win.count}x ${win.symbol} - ${win.payout}`);
+              });
+              
+              // Here you would typically update the game state with the win information
+              // For example:
+              this.gameState.lastWinAmount = total;
+              this.gameState.winningPaylines = wins;
+              
+              // You might want to trigger some win animation or notification here
+          } else {
+              console.log("No wins this spin");
+              this.gameState.lastWinAmount = 0;
+              this.gameState.winningPaylines = [];
+          }
+      }
+
      public startSpin(): void {
           if (this.gameState.running) return; // if already spinning, do nothing
 
@@ -250,22 +379,21 @@ export class ReelsContainer extends Component {
                     onComplete: () => {
                          // remove blur when the reel stops
                          gsap.to(reel.blur, {
-                              strengthY: 0,
-                              duration: 0.2,
+                             strengthY: 0,
+                             duration: 0.2,
                          });
-
+                     
                          // update the position to match the target
                          this.reelPositions[i] = this.targetReelPositions[i];
-
+                     
                          // update the visible symbols for this reel
                          this.updateVisibleSymbolsForReel(i);
-
+                     
                          // if this is the last reel, update the game state
                          if (i === this.reels.length - 1) {
-                              this.gameState.running = false;
-                              this.symbolsInitialized = false; // Reset for next spin
+                             this.handleSpinComplete();
                          }
-                    },
+                     },
                });
           }
      }
