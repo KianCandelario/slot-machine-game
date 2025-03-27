@@ -34,26 +34,22 @@ export class ReelsPositioning {
 
     // generate a new random outcome for the next spin
     private generateRandomOutcome(): number[] {
-         //const newPositions = [0, 11, 1, 10, 14];
-          const newPositions = []
-           for (let i = 0; i < NUM_REEL; i++) {
-               // generate random position for each reel
-               const randomPos = Math.floor(
+        // const newPositions = [0, 11, 1, 10, 14];
+        const newPositions = []
+            for (let i = 0; i < NUM_REEL; i++) {
+                // generate random position for each reel
+                const randomPos = Math.floor(
                     Math.random() * this.reelSet[i].length
-               );
-               newPositions.push(randomPos);
-           }
-          return newPositions;
+                );
+                newPositions.push(randomPos);
+            }
+        return newPositions;
     }
 
     // prepare spin outcome (generate or use predetermined)
     public prepareSpinOutcome(): void {
         // generate a new random outcome if not already set
-        if (
-            this.targetReelPositions.every(
-                (pos, i) => pos === this.reelPositions[i]
-            )
-        ) {
+        if (this.targetReelPositions.every((pos, i) => pos === this.reelPositions[i])) {
             this.targetReelPositions = this.generateRandomOutcome();
         }
     }

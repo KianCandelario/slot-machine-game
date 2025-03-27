@@ -256,8 +256,8 @@ export class ReelsContainer extends Component {
       
               
               gsap.to(this.gameState, {
-                  duration: 5,
-                  "balance.value": totalBalance,
+                  duration: 10,
+                  delay: 1,
                   ease: "power2.out",
                   onUpdate: () => {
                       if (this.gameState.balance.value < totalBalance) {
