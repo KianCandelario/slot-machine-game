@@ -289,16 +289,10 @@ export class ReelsContainer extends Component {
 
           this.clearWinningEffects();
 
-          this.gameState.running = true;
-
           // generate or use predetermined outcome
           this.reelsPositioning.prepareSpinOutcome();
 
-          // calculate the final screen based on target positions
-          this.reelsPositioning.calculateFinalScreen();
-
-          // prepare the symbols with their final textures
-          this.prepareSymbolsWithFinalTextures();
+          this.gameState.running = true;
 
           // make all symbols visible before spinning starts
           for (const reel of this.reels) {
@@ -345,6 +339,13 @@ export class ReelsContainer extends Component {
                              strengthY: 0,
                              duration: 0.2,
                          });
+
+
+                         // calculate the final screen based on target positions
+                         this.reelsPositioning.calculateFinalScreen();
+
+                         // prepare the symbols with their final textures
+                         this.prepareSymbolsWithFinalTextures();
                      
                          // update the position to match the target
                          this.reelsPositioning.updateReelPosition(i);
