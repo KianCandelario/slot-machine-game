@@ -8,7 +8,7 @@ export class Logo extends Component {
   private logoTexture!: Texture;
   private logo!: Sprite;
 
-  // Base dimensions for the logo
+  // base dimensions for the logo
   private baseWidth: number = 380;
   private baseHeight: number = 190;
   
@@ -17,13 +17,14 @@ export class Logo extends Component {
   // ensure it doesn't get too small or too large
   private minWidth: number = 200;
   private maxWidth: number = 600;
+    anchor: any;
 
   constructor() {
     super();
   }
 
   public async init(): Promise<void> {
-    // Load textures
+    // load textures
     this.logoShadowTexture = await Assets.load(
       "../assets/japanese_theme/others/logo.png"
     );
@@ -31,61 +32,61 @@ export class Logo extends Component {
       "../assets/japanese_theme/others/logo.png"
     );
 
-    // Create sprites
+    // create sprites
     this.logoShadow = new Sprite(this.logoShadowTexture);
     this.logo = new Sprite(this.logoTexture);
 
-    // Configure shadow sprite
+    // configure shadow sprite
     this.logoShadow.tint = 0x000000;
     this.logoShadow.alpha = 0.5;
 
-    // Add sprites to the container
+    // add sprites to the container
     this.addChild(this.logoShadow);
     this.addChild(this.logo);
 
-    // Set initial layout
+    // set initial layout
     this.recalculateLayout(window.innerWidth);
     
-    // Add resize listener
+    // add resize listener
     window.addEventListener('resize', () => {
       this.recalculateLayout(window.innerWidth);
     });
   }
 
   public update(delta: number): void {
-    // Animation updates can go here if needed
+    // animation updates can go here if needed
   }
 
   protected recalculateLayout(width: number): void {
-    // Calculate new width based on screen percentage
+    // calculate new width based on screen percentage
     let newWidth = Math.floor(width * this.screenWidthPercentage);
     
-    // Apply min/max constraints
+    // apply min/max constraints
     newWidth = Math.max(this.minWidth, Math.min(newWidth, this.maxWidth));
     
-    // Calculate height proportionally to maintain aspect ratio
+    // calculate height proportionally to maintain aspect ratio
     const aspectRatio = this.baseHeight / this.baseWidth;
     const newHeight = Math.floor(newWidth * aspectRatio);
     
-    // Update logo dimensions
+    // update logo dimensions
     this.logo.width = newWidth;
     this.logo.height = newHeight;
     
-    // Update shadow dimensions (same as logo)
+    // update shadow dimensions (same as logo)
     this.logoShadow.width = newWidth;
     this.logoShadow.height = newHeight;
 
-    // Center the logo horizontally
+    // center the logo horizontally
     const topMargin = 35;
     const horizontalCenter = (width - newWidth) / 2;
     
-    // Position logo and shadow (shadow slightly offset)
+    // position logo and shadow (shadow slightly offset)
     this.logo.position.set(horizontalCenter, topMargin);
     this.logoShadow.position.set(horizontalCenter + 5, topMargin + 5);
   }
 
   public destroy(): void {
-    // Clean up event listener
+    // clean up event listener
     window.removeEventListener('resize', () => {
       this.recalculateLayout(window.innerWidth);
     });

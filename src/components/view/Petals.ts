@@ -11,16 +11,16 @@ class Petal extends Sprite {
     constructor(texture: Texture) {
         super(texture)
         
-        // Randomize petal properties
+        // randomize petal properties
         this.width = Math.random() * 25 + 10
         this.height = this.width
         this.alpha = Math.random() * 0.7 + 0.4 
 
-        // Starting position
+        // starting position
         this.x = Math.random() * window.innerWidth
-        this.y = -50  // Start above the screen
+        this.y = -50  // start above the screen
 
-        // Movement properties
+        // movement properties
         this.speed = Math.random() * 1.7 + 1 
         this.rotationSpeed = (Math.random() - 0.5) * 0.1 
         this.wobble = Math.random() * Math.PI * 2 
@@ -28,17 +28,17 @@ class Petal extends Sprite {
     }
 
     update() {
-        // Falling movement
+        // falling movement
         this.y += this.speed
 
-        // Rotation
+        // rotation
         this.rotation += this.rotationSpeed
 
-        // Wobble effect (side-to-side movement)
+        // wobble effect (side-to-side movement)
         this.wobble += this.wobbleSpeed
         this.x += Math.sin(this.wobble) * 2
 
-        // Reset if out of screen
+        // reset if out of screen
         if (this.y > window.innerHeight + 50) {
             this.y = -50
             this.x = Math.random() * window.innerWidth
@@ -73,7 +73,7 @@ export class Petals extends Component {
     public async init(): Promise<void> {
         const petalTexture = AssetPreloader.getPetalTexture();
         
-        // Spawn Petals
+        // spawn Petals
         this.petals = Array.from({ length: this.PETAL_COUNT }, () => {
             const petal = new Petal(petalTexture);
             this.petalsContainer.addChild(petal);
@@ -81,14 +81,14 @@ export class Petals extends Component {
         });
     }
 
-    // Match the Component abstract method signature: update(delta: number)
+    // match the Component abstract method signature: update(delta: number)
     public update(delta: number): void {
-        // Update all petals
+        // update all petals
         for (const petal of this.petals) {
             petal.update();
         }
         
-        // Update tweens
+        // update tweens
         const now = Date.now();
         const remove = [];
 
@@ -110,21 +110,21 @@ export class Petals extends Component {
         }
     }
 
-    // Utility function for linear interpolation
+    // utility function for linear interpolation
     private lerp(start: number, end: number, amount: number): number {
         return start + (end - start) * amount;
     }
 
-    // Add a new tween
+    // add a new tween
     public addTween(tween: Tween): void {
         this.tweening.push(tween);
     }
 
-    // Override the recalculateLayout method to handle resize
+    // override the recalculateLayout method to handle resize
     protected recalculateLayout(width: number, height: number): void {
-        // Adjust petals position if needed when window is resized
+        // adjust petals position if needed when window is resized
         for (const petal of this.petals) {
-            // Keep petals within the new window width if they're outside
+            // keep petals within the new window width if they're outside
             if (petal.x > width) {
                 petal.x = Math.random() * width;
             }

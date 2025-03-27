@@ -11,6 +11,7 @@ export class SpinButton extends Component {
   private gameState: GameState;
   private scale_: number = 1;
   private baseButtonScale: number = 0.23;
+  private spinSoundFX: HTMLAudioElement | null = null;
 
   constructor(gameState: GameState) {
     super();
@@ -29,22 +30,30 @@ export class SpinButton extends Component {
     
     this.addChild(this.buttonSprite);
     
-    // Initialize the animations
+    // get the spin sound effect
+    this.spinSoundFX = AssetPreloader.getSpinSoundFX();
+    if (this.spinSoundFX) {
+      this.spinSoundFX.volume = 0.5;
+      this.spinSoundFX.playbackRate = 1.8;
+    }
+    
+    // initialize the animations
     this.pulsingAnimation = new Pulsing(this.gameState, this.buttonSprite, 0.07, 0.05);
     this.rotatingAnim = new Rotate(this.gameState, this.buttonSprite, 0.01);
     
-    // Start the pulsing animation
+    // start the pulsing animation
     this.pulsingAnimation.start();
     
-    // Add pointer interactions
+    // add pointer interactions
     this.on('pointerdown', this.onButtonDown.bind(this));
     this.on('pointerup', this.onButtonUp.bind(this));
     this.on('pointerupoutside', this.onButtonUp.bind(this));
+    this.on('pointertap', this.onButtonTap.bind(this)); // Add tap/click handler
     
-    // Initial layout calculation
+    // initial layout calculation
     this.recalculateLayout(window.innerWidth, window.innerHeight);
     
-    // Add window resize event listener
+    // add window resize event listener
     window.addEventListener('resize', () => {
       this.recalculateLayout(window.innerWidth, window.innerHeight);
     });
@@ -52,7 +61,7 @@ export class SpinButton extends Component {
 
   private onButtonDown(): void {
     this.pulsingAnimation.stop();
-    // Scale down slightly when pressed, relative to current scale
+    // scale down slightly when pressed, relative to current scale
     this.scale.set(this.scale_ * 0.9);
   }
 
@@ -61,37 +70,44 @@ export class SpinButton extends Component {
     this.scale.set(this.scale_);
   }
 
+  private onButtonTap(): void {
+    // Play the spin sound effect when button is clicked
+    if (this.spinSoundFX) {
+      this.spinSoundFX.play().catch(e => console.log("Audio play failed:", e));
+    }
+  }
+
   public update(deltaTime: number): void {
-    // Update the animations
+    // update the animations
     this.pulsingAnimation.update(deltaTime);
     this.rotatingAnim.update(deltaTime);
   }
 
   protected recalculateLayout(width: number, height: number): void {
-    // Calculate appropriate scale based on screen size
+    // calculate appropriate scale based on screen size
     const referenceWidth = 1920; 
     const referenceHeight = 1080; 
     
-    // Calculate scale based on how much the actual screen differs from reference
+    // calculate scale based on how much the actual screen differs from reference
     const widthRatio = width / referenceWidth;
     const heightRatio = height / referenceHeight;
     
-    // Use the smaller ratio to ensure everything fits
+    // use the smaller ratio to ensure everything fits
     this.scale_ = Math.min(widthRatio, heightRatio);
     
-    // Limit scaling to reasonable bounds
+    // limit scaling to reasonable bounds
     this.scale_ = Math.max(0.5, Math.min(this.scale_, 1.5));
     
-    // Apply the scaling
+    // apply the scaling
     this.scale.set(this.scale_);
     
-    // Position the button at the center horizontally and at 90% from the top vertically
+    // position the button at the center horizontally and at 90% from the top vertically
     this.position.set(
       width * 0.5,
-      height * 0.9  
+      height * 0.9
     );
     
-    // Adjust the base button sprite scale according to screen size
+    // adjust the base button sprite scale according to screen size
     const responsiveButtonScale = this.baseButtonScale * (1 + (width / referenceWidth - 1) * 0.5);
     this.buttonSprite.scale.set(
       Math.min(Math.max(responsiveButtonScale, this.baseButtonScale * 0.8), this.baseButtonScale * 1.2)

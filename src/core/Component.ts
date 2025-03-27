@@ -4,7 +4,6 @@ export abstract class Component extends Container {
   constructor() {
     super();
 
-		this.pivot.set(0.5);
     // Bind the resize handler to the class instance
     this.onResize = this.onResize.bind(this);
 
@@ -16,20 +15,22 @@ export abstract class Component extends Container {
   public abstract update(delta: number): void;
 
   protected onResize(): void {
+    const width = window.innerWidth
+    const height = window.innerHeight
     // recalculate positions, sizes, or scales based on the new window dimensions
-    this.recalculateLayout(window.innerWidth, window.innerHeight);
+    this.recalculateLayout(width, height);
   }
 
   protected recalculateLayout(width: number, height: number): void {
     // child classes will override this method to implement specific responsive behavior
   }
 
-  // Cleanup method
+  // cleanup method
   public destroy(): void {
-    // Remove the resize event listener
+    // remove the resize event listener
     window.removeEventListener("resize", this.onResize);
 
-    // Destroy the container and its children
+    // destroy the container and its children
     super.destroy();
   }
 }
