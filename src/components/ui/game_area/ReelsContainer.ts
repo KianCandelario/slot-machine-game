@@ -15,8 +15,8 @@ import { GameState } from "../../../core/Game";
 import { ReelsPositioning } from "../../logic/ReelsPositioning";
 import { WinChecker } from "../../logic/Winnings";
 import { glowFilter } from "../../../lib/filters";
+import { PAYLINES } from "../../logic/Winnings";
 import { gsap } from "gsap";
-import { GlowFilter } from "pixi-filters";
 
 
 export class ReelsContainer extends Component {
@@ -176,58 +176,118 @@ export class ReelsContainer extends Component {
      }
 
 
-     // This method should be called when the spin completes
      private handleSpinComplete(): void {
           this.gameState.running = false;
-          this.symbolsInitialized = false; // Reset for next spin
-
-          // Calculate wins
+          this.symbolsInitialized = false; // reset for next spin
+      
+          // calculate wins
           const { total, wins } = this.winChecker.calculateWins(this.reelsPositioning.getFinalScreen());
           
           if (wins.length > 0) {
-               
-
               console.log(`Total win: ${total}`);
               console.log("Winning paylines:");
+      
               wins.forEach(win => {
                     console.log(`Payline ${win.payline}: ${win.count}x ${win.symbol} - ${win.payout}`);
                     
-                    
-                         gsap.to(GlowFilter, {
-                              startAt: {
-                                   alpha: 0,
-                              },
-                              yoyo: true,
-                              repeat: -1,
-                              duration: 0.5,
-                              color: "#F5F5DC",
-                              ease: "back.inOut",
-                              onUpdate: () => {
-                                   for (let i = 0; i < win.count; i++) {
-                                        for (let [sprite, symbolCode] of this.symbolCodeMap.entries()) {
-                                             if (symbolCode === win.symbol) {
-                                                  sprite.filters = [glowFilter]
-                                             }
-                                        }
-                                   }
-                              }
-                         })
-                    
-              });
+                    // apply glow effect to winning symbols in the payline
+                    PAYLINES[win.payline - 1].slice(0, win.count).forEach(([row, col]) => {
+
+                         // find the corresponding sprite in the specific reel
+                         const reel = this.reels[col];
+                         const targetSymbol = reel.symbols.find(symbol => {
+                              // calculate the row position of this symbol within the visible area
+                              const slotHeight = SYMBOL_SIZE + SYMBOL_GAP;
+                              const symbolRowPosition = Math.floor(symbol.y / slotHeight);
+                              
+                              // check if this symbol matches the target row
+                              return symbolRowPosition === row;
+                         });
+
+          
+                         if (targetSymbol) {
+                              gsap.to(glowFilter, {
+                                   startAt: {
+                                        alpha: 0
+                                   },
+                                   alpha: 1,
+                                   yoyo: true,
+                                   repeat: -1,
+                                   duration: 1,
+                                   ease: "power1.inOut"
+                              });
+
+                              // add the glow filter to the sprite
+                              targetSymbol.filters = [glowFilter];
+
+
+                              gsap.to(targetSymbol.scale, {
+                                   startAt: {
+                                        alpha: 0
+                                   },
+                                   alpha: 1,
+                                   yoyo: true,
+                                   repeat: -1,
+                                   duration: 1,
+                                   ease: "power1.inOut"
+                              })
+
+                         }
+                    });
+               });
               
-              // Update game state with win information
+              // update game state with win information
               this.gameState.lastWinAmount = total;
               this.gameState.winningPaylines = wins;
+
+              this.scoring()
           } else {
               console.log("No wins this spin");
               this.gameState.lastWinAmount = 0;
               this.gameState.winningPaylines = [];
+          }
+      }
+
+      private scoring(): void {
+          // ensure we only score if there are actual wins
+          if (this.gameState.lastWinAmount > 0) {
+              const totalWins = this.gameState.bet.value * this.gameState.lastWinAmount;
+              const totalBalance = this.gameState.balance.value + totalWins
+      
+              
+              gsap.to(this.gameState, {
+                  duration: 5,
+                  "balance.value": totalBalance,
+                  ease: "power2.out",
+                  onUpdate: () => {
+                      if (this.gameState.balance.value < totalBalance) {
+                         this.gameState.balance.value++
+                      }
+                          
+                  },
+                  onComplete: () => {
+                      this.gameState.balance.value = totalBalance;
+                      
+                      console.log(`Final Balance after win: ${this.gameState.balance.value}`);
+                  }
+              });
+          }
+      }
+
+     private clearWinningEffects(): void {
+          // remove filters from all symbols
+          for (const reel of this.reels) {
+              for (const symbol of reel.symbols) {
+                  symbol.filters = [];
+              }
           }
      }
 
 
      public startSpin(): void {
           if (this.gameState.running) return; // if already spinning, do nothing
+
+          this.clearWinningEffects();
 
           this.gameState.running = true;
 
