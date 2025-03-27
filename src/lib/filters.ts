@@ -1,10 +1,9 @@
 import { GlowFilter } from "pixi-filters";
 
 export const glowFilter = new GlowFilter({
-     distance: 10,
-     outerStrength: 3,
-     innerStrength: 0,
-     quality: 2,
-     alpha: 1,
-     knockout: false
-})
+     distance: 15,
+     outerStrength: 2,
+     innerStrength: .5,
+     color: 0xFFD700, // Golden glow
+     quality: 0.5
+ });
