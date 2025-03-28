@@ -255,22 +255,21 @@ export class ReelsContainer extends Component {
               const totalBalance = this.gameState.balance.value + totalWins
       
               
-              gsap.to(this.gameState, {
-                  duration: 10,
-                  delay: 2,
-                  ease: "power2.out",
-                  onUpdate: () => {
-                      if (this.gameState.balance.value < totalBalance) {
-                         this.gameState.balance.value++
-                      }
-                          
-                  },
-                  onComplete: () => {
-                      this.gameState.balance.value = totalBalance;
-                      
-                      console.log(`Final Balance after win: ${this.gameState.balance.value}`);
-                  }
-              });
+               gsap.to(this.gameState, {
+                    duration: 10,
+                    delay: 2,
+                    ease: "power2.out",
+                    onUpdate: () => {
+                         if (this.gameState.balance.value < totalBalance) {
+                              this.gameState.balance.value++
+                         }
+                    },                       
+                    onComplete: () => {
+                         this.gameState.balance.value = totalBalance;
+                         
+                         console.log(`Final Balance after win: ${this.gameState.balance.value}`);
+                    }
+               });
           }
       }
 
